@@ -1,6 +1,6 @@
 ﻿namespace WebApiCatalogo.Catalogo.Core.Model;
 
-public class Produto
+public class ProdutoModel
 {
     public int ProdutoId { get; set; }
     public string? Nome { get; set; }
