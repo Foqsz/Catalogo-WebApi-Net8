@@ -22,7 +22,6 @@
   <ItemGroup>
     <Folder Include="Catalogo.API\Controllers\" />
     <Folder Include="Catalogo.Application\" />
-    <Folder Include="Catalogo.Infrastucture\" />
   </ItemGroup>
 
 </Project>
