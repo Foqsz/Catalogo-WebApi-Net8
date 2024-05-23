@@ -9,5 +9,7 @@ public class ProdutoModel
     public string? ImagemUrl { get; set; }
     public float Estoque { get; set; }
     public DateTime DataCadastroo { get; set; }
+    public CategoriaModel? Categoria { get; set; }
 }
+
 
