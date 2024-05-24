@@ -3,10 +3,11 @@
     "WebApiCatalogo": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "https://localhost:7185/swagger/index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:51072;http://localhost:51073"
+      "applicationUrl": "https://localhost:7185;"
     }
   }
 }
