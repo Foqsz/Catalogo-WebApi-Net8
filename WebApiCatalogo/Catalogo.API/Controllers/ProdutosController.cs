@@ -27,7 +27,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return produtos;
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name ="ObterProduto")]
         public ActionResult<ProdutoModel> Get(int id)
         {
             var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
@@ -36,6 +36,20 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 return NotFound("Produto não encontrado.");
             }
             return produto;
+        }
+
+        [HttpPost]
+        public ActionResult Post(ProdutoModel produto)
+        {
+            if (produto is null)
+            {
+                return BadRequest("Não encontrado.");
+            }
+
+            _context.Produtos.Add(produto);
+            _context.SaveChanges();
+
+            return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
     }
 }
