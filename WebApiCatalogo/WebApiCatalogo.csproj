@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Catalogo.API\Controllers\" />
     <Folder Include="Catalogo.Application\" />
   </ItemGroup>
 
