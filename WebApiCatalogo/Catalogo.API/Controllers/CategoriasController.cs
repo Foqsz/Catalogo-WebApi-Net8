@@ -20,13 +20,13 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         [HttpGet("produtos")]
         public ActionResult<IEnumerable<CategoriaModel>> GetCategoriasProdutos()
         {
-            return _context.Categorias.Include(p => p.Produtos).ToList();
+            return _context.Categorias.Include(p => p.Produtos).Where(c => c.CategoriaId <= 5).ToList();
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<CategoriaModel>> Get()
         {
-            return _context.Categorias.ToList();
+            return _context.Categorias.AsNoTracking().ToList(); //usa-se AsNoTracking apenas em consultas de leitura, para ter melhor desempenho
         }
 
         [HttpGet("{id:int}", Name = "ObterCategoria")]
