@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace WebApiCatalogo.Catalogo.Core.Model;
 
@@ -27,6 +28,8 @@ public class ProdutoModel
     public float Estoque { get; set; }
     public DateTime DataCadastroo { get; set; }
     public int CategoriaId { get; set; }
+
+    [JsonIgnore]
     public CategoriaModel? Categoria { get; set; }
 }
 
