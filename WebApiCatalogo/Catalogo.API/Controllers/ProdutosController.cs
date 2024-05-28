@@ -18,17 +18,19 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<ProdutoModel>> Get()
+
+        // /produtos/primeiro
+        [HttpGet("primeiro")]
+        public ActionResult<ProdutoModel> GetPrimeiro()
         {
             try
             {
-                var produtos = _context.Produtos.ToList();
-                if (produtos is null)
+                var produto = _context.Produtos.FirstOrDefault();
+                if (produto is null)
                 {
                     return NotFound("Produtos não encontrados.");
                 }
-                return produtos;
+                return produto;
             }
             catch (Exception)
             {
@@ -37,6 +39,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         }
 
+        // /produtos id
         [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<ProdutoModel> Get(int id)
         {
@@ -56,6 +59,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         }
 
+        // /produtos
         [HttpPost]
         public ActionResult Post(ProdutoModel produto)
         {
@@ -78,6 +82,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         }
 
+        // /produtos id
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, ProdutoModel produto)
         {
@@ -99,6 +104,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         }
 
+        // /produtos id
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
