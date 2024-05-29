@@ -7,7 +7,7 @@ using WebApiCatalogo.Catalogo.Infrastucture.Context;
 
 namespace WebApiCatalogo.Catalogo.API.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")] // /produtos
     [ApiController]
     public class ProdutosController : ControllerBase
     {
@@ -19,8 +19,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
 
-        // /produtos/primeiro
-        [HttpGet("primeiro")]
+        // api/produtos/primeiro
+        [HttpGet("/primeiro")]
         public ActionResult<ProdutoModel> GetPrimeiro()
         {
             try
@@ -39,8 +39,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         }
 
-        // /produtos id
-        [HttpGet("{id:int}", Name = "ObterProduto")]
+        // api/produtos/id
+        [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public ActionResult<ProdutoModel> Get(int id)
         {
             try
@@ -59,7 +59,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         }
 
-        // /produtos
+        // api/produtos
         [HttpPost]
         public ActionResult Post(ProdutoModel produto)
         {
@@ -82,7 +82,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         }
 
-        // /produtos id
+        // api/produtos/id
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, ProdutoModel produto)
         {
@@ -104,8 +104,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         }
 
-        // /produtos id
-        [HttpDelete("{id}")]
+        // api/produtos id
+        [HttpDelete("{id:int:min(1)}")]
         public ActionResult Delete(int id)
         {
             try
