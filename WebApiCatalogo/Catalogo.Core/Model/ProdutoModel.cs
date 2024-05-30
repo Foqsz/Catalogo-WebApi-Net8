@@ -10,21 +10,21 @@ public class ProdutoModel
     [Key]
     public int ProdutoId { get; set; }
 
-    [Required]
-    [StringLength(80)]
-    public string? Nome { get; set; }
+    [Required(ErrorMessage = "O nome é obrigatório")]
+    [StringLength(40, ErrorMessage = "O Nome deve ter entre 5 e 20 caracteres.", MinimumLength = 5)]
+    public string Nome { get; set; }
 
     [Required]
-    [StringLength(300)]
-    public string? Descricao { get; set; }
+    [StringLength(30, ErrorMessage = "A Descrição deve ter no máximo {1} caracteres.")]
+    public string Descricao { get; set; }
 
-    [Required]
-    [Column(TypeName = "decimal(10,2)")]
+    [Required] 
+    [Range(1, 1000, ErrorMessage = "O Preço deve estar entre {1} e {1000}.")]
     public decimal Preco { get; set; }
 
     [Required]
     [StringLength(300)]
-    public string? ImagemUrl { get; set; }
+    public string ImagemUrl { get; set; }
     public float Estoque { get; set; }
     public DateTime DataCadastroo { get; set; }
     public int CategoriaId { get; set; }
