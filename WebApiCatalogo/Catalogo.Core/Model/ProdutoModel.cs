@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using WebApiCatalogo.Catalogo.Application.Validations;
 
 namespace WebApiCatalogo.Catalogo.Core.Model;
 
@@ -12,6 +13,7 @@ public class ProdutoModel
 
     [Required(ErrorMessage = "O nome é obrigatório")]
     [StringLength(40, ErrorMessage = "O Nome deve ter entre 5 e 20 caracteres.", MinimumLength = 5)]
+    [PrimeiraLetraMaiusculaAtributte]
     public string Nome { get; set; }
 
     [Required]
