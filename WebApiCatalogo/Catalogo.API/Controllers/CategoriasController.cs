@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApiCatalogo.Catalogo.Application.Interface;
 using WebApiCatalogo.Catalogo.Core.Model;
 using WebApiCatalogo.Catalogo.Infrastucture.Context;
 
@@ -16,6 +17,13 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         {
             _context = context;
         }
+
+        [HttpGet("UsandoFromServices/{nome}")]
+        public ActionResult<string> GetSaudacaoFromServices([FromServices] IMeuServico meuServico, string nome)
+        {
+            return meuServico.Saudacao(nome);
+        }
+
 
         [HttpGet("produtos")]
         public ActionResult<IEnumerable<CategoriaModel>> GetCategoriasProdutos()

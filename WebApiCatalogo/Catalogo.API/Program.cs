@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using WebApiCatalogo.Catalogo.Application.Interface;
+using WebApiCatalogo.Catalogo.Application.Services;
 using WebApiCatalogo.Catalogo.Infrastucture.Context; 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,8 @@ var mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnecti
 builder.Services.AddDbContext<AppDbContext>(options => /* => é lambda*/
                      options.UseMySql(mySqlConnection,
                      ServerVersion.AutoDetect(mySqlConnection)));
+
+builder.Services.AddTransient<IMeuServico, MeuServico>();
 
 var app = builder.Build();
 
