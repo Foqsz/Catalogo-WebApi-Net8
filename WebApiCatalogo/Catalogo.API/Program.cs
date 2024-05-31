@@ -4,16 +4,23 @@ using WebApiCatalogo.Catalogo.Application.Extensions;
 using WebApiCatalogo.Catalogo.Application.Filters;
 using WebApiCatalogo.Catalogo.Application.Interface;
 using WebApiCatalogo.Catalogo.Application.Services;
-using WebApiCatalogo.Catalogo.Infrastucture.Context; 
+using WebApiCatalogo.Catalogo.Infrastucture.Context;
+using WebApiCatalogo.Catalogo.Infrastucture.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-        options.JsonSerializerOptions
-            .ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(ApiExceptionFilter));
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions
+        .ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -32,6 +39,13 @@ builder.Services.AddDbContext<AppDbContext>(options => /* => é lambda*/
 builder.Services.AddTransient<IMeuServico, MeuServico>();
 builder.Services.AddScoped<ApiLoggingFilter>();
 
+
+builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
+{
+    LogLevel = LogLevel.Information
+}));
+
+/*
 builder.Services.AddLogging(builder =>
 {
     builder.ClearProviders(); // Limpa os provedores de log existentes para evitar duplicações
@@ -41,7 +55,7 @@ builder.Services.AddLogging(builder =>
     builder.AddFilter("Microsoft", LogLevel.Warning); // LogLevel.Warning ou superior para 'Microsoft' logs
     builder.AddFilter("System", LogLevel.Error); // LogLevel.Error ou superior para 'System' logs
     builder.AddFilter("MeuApp", LogLevel.Trace); // LogLevel.Trace ou superior para logs específicos do seu aplicativo
-});
+});*/
 
 var app = builder.Build();
 
@@ -49,17 +63,17 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(); 
+    app.UseSwaggerUI();
     app.ConfigureExceptionHandler();
 }
 
-app.UseHttpsRedirection(); 
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.Use(async (context, next) =>
     {
-    await next(context);
+        await next(context);
     });
 
 app.MapControllers();

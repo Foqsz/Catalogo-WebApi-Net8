@@ -12,73 +12,56 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger _logger;
 
-        public ProdutosController(AppDbContext context)
+        public ProdutosController(AppDbContext context, ILogger<ProdutosController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
 
-        // api/produtos/primeiro
-        [HttpGet("/primeiro")]
+        // api/produtos
+        [HttpGet("/produtos")]
         public ActionResult<ProdutoModel> GetPrimeiro()
         {
-            try
+            var produto = _context.Produtos.ToList();
+            if (produto is null)
             {
-                var produto = _context.Produtos.FirstOrDefault();
-                if (produto is null)
-                {
-                    return NotFound("Produtos não encontrados.");
-                }
-                return produto;
+                _logger.LogWarning("Produtos não encontrados.");
+                return NotFound("Produtos não encontrados.");
             }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
-            }
-
+            return Ok(produto);
         }
 
         // api/produtos/id
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public ActionResult<ProdutoModel> Get(int id)
         {
-            try
-            {
-                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
-                if (produto is null)
-                {
-                    return NotFound($"Produto com o id = {id} não encontrado.");
-                }
-                return produto;
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
-            }
 
+            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            if (produto is null)
+            {
+                _logger.LogWarning($"O produto com o id {id} não foi encontrado.");
+                return NotFound($"Produto com o id = {id} não encontrado.");
+            }
+            return produto;
         }
 
         // api/produtos
         [HttpPost]
         public ActionResult Post(ProdutoModel produto)
         {
-            try
-            {
-                if (produto is null)
-                {
-                    return BadRequest("Não encontrado.");
-                }
 
-                _context.Produtos.Add(produto);
-                _context.SaveChanges();
-
-                return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
-            }
-            catch (Exception)
+            if (produto is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
+                _logger.LogWarning("Produto não encontrado.");
+                return BadRequest("Não encontrado.");
             }
+
+            _context.Produtos.Add(produto);
+            _context.SaveChanges();
+            return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
 
         }
 
@@ -86,21 +69,14 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, ProdutoModel produto)
         {
-            try
+            if (id != produto.ProdutoId)
             {
-                if (id != produto.ProdutoId)
-                {
-                    return BadRequest($"Produto id = {id} é diferente.");
-                }
-                _context.Entry(produto).State = EntityState.Modified;
-                _context.SaveChanges();
-
-                return Ok(produto);
+                _logger.LogWarning($"ProdutoId: {id} deu erro. Id diferente.");
+                return BadRequest($"Produto id = {id} é diferente.");
             }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
-            }
+            _context.Entry(produto).State = EntityState.Modified;
+            _context.SaveChanges();
+            return Ok(produto);
 
         }
 
@@ -108,23 +84,16 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         [HttpDelete("{id:int:min(1)}")]
         public ActionResult Delete(int id)
         {
-            try
-            {
-                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
 
-                if (produto is null)
-                {
-                    return NotFound($"Produto id = {id} não localizado.");
-                }
-                _context.Produtos.Remove(produto);
-                _context.SaveChanges();
-
-                return Ok(produto);
-            }
-            catch (Exception)
+            if (produto is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
+                _logger.LogWarning($"O produto id {id} não foi localizado.");
+                return NotFound($"Produto id = {id} não localizado.");
             }
+            _context.Produtos.Remove(produto);
+            _context.SaveChanges();
+            return Ok(produto);
 
         }
     }

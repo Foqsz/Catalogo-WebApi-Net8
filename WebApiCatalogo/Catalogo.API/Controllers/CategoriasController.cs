@@ -15,7 +15,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
-  
+
         public CategoriasController(AppDbContext context, IConfiguration configuration, ILogger<CategoriasController> logger)
         {
             _configuration = configuration;
@@ -45,114 +45,86 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         [HttpGet("produtos")]
         public ActionResult<IEnumerable<CategoriaModel>> GetCategoriasProdutos()
         {
-            _logger.LogInformation("-------------GET api/categorias/produtos ---------------");
-
-            return _context.Categorias.Include(p => p.Produtos).Where(c => c.CategoriaId <= 5).ToList();
+            var categoriasProdutos = _context.Categorias.Include(p => p.Produtos).Where(c => c.CategoriaId <= 5).ToList();
+            if (categoriasProdutos is null)
+            {
+                _logger.LogWarning("Falha ao consultar todas as categorias");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
+            }
+            return categoriasProdutos;
         }
 
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))]
         public ActionResult<IEnumerable<CategoriaModel>> Get()
         {
-            try
+            var categorias = _context.Categorias.AsNoTracking().ToList(); //usa-se AsNoTracking apenas em consultas de leitura, para ter melhor
+
+            if (categorias is null)
             {
-                return _context.Categorias.AsNoTracking().ToList(); //usa-se AsNoTracking apenas em consultas de leitura, para ter melhor
-            }
-            catch (Exception)
-            {
+                _logger.LogWarning("Falha ao consultar as categorias.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
             }
+            return(categorias);  
         }
 
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public ActionResult<CategoriaModel> Get(int id)
-        {  
+        {
 
-            try
+            var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+
+            if (categoria == null)
             {
-                var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
-
-                if (categoria == null)
-                {
-                    return NotFound($"Categoria com id = {id} não encontrada.");
-                }
-                return Ok(categoria);
+                _logger.LogWarning($"Categoria com o id = {id} não encontrada.");
+                return NotFound($"Categoria com id = {id} não encontrada.");
             }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
-            }
-
-
+            return Ok(categoria);
         }
+
 
         [HttpPost]
         public ActionResult Post(CategoriaModel categoria)
         {
-            try
+            if (categoria is null)
             {
-                if (categoria is null)
-                {
-                    return BadRequest();
-                }
-
-                _context.Categorias.Add(categoria);
-                _context.SaveChanges();
-
-                return new CreatedAtRouteResult("ObterCategoria",
-                    new { id = categoria.CategoriaId }, categoria);
-            }
-            catch (Exception)
-            {
-
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
+                _logger.LogWarning($"Dados inválidos...");
+                return BadRequest("Dados inválidos.");
             }
 
+            _context.Categorias.Add(categoria);
+            _context.SaveChanges();
+
+            return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoria);
         }
 
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, CategoriaModel categoria)
         {
-            try
+            if (id != categoria.CategoriaId)
             {
-                if (id != categoria.CategoriaId)
-                {
-                    return BadRequest("O id é diferente da categoria.");
-                }
-
-                _context.Entry(categoria).State = EntityState.Modified; //entity framework entende que foi modificada
-                _context.SaveChanges();
-                return Ok(categoria);
-            }
-            catch (Exception)
-            {
-
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
+                _logger.LogWarning($"O id = {id} é difrente da categoria!");
+                return BadRequest("O id é diferente da categoria.");
             }
 
+            _context.Entry(categoria).State = EntityState.Modified; //entity framework entende que foi modificada
+            _context.SaveChanges();
+            return Ok(categoria);
         }
 
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            try
+            var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+
+            if (categoria == null)
             {
-                var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
-
-                if (categoria == null)
-                {
-                    return NotFound($"Não foi localizar deletar o id = {id}..");
-                }
-                _context.Categorias.Remove(categoria);
-                _context.SaveChanges();
-                return Ok(categoria);
+                _logger.LogWarning($"Categoria com o id = {id} não encotrada!");
+                return NotFound($"Não foi localizar deletar a categoria id = {id}. Não encontrada.");
             }
-            catch (Exception)
-            {
-
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
-            }
-
+            _context.Categorias.Remove(categoria);
+            _context.SaveChanges();
+            return Ok(categoria);
         }
     }
 }
