@@ -32,6 +32,17 @@ builder.Services.AddDbContext<AppDbContext>(options => /* => é lambda*/
 builder.Services.AddTransient<IMeuServico, MeuServico>();
 builder.Services.AddScoped<ApiLoggingFilter>();
 
+builder.Services.AddLogging(builder =>
+{
+    builder.ClearProviders(); // Limpa os provedores de log existentes para evitar duplicações
+    builder.AddConsole(); // Adiciona o provedor de log do console
+
+    // Define os níveis de log desejados
+    builder.AddFilter("Microsoft", LogLevel.Warning); // LogLevel.Warning ou superior para 'Microsoft' logs
+    builder.AddFilter("System", LogLevel.Error); // LogLevel.Error ou superior para 'System' logs
+    builder.AddFilter("MeuApp", LogLevel.Trace); // LogLevel.Trace ou superior para logs específicos do seu aplicativo
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

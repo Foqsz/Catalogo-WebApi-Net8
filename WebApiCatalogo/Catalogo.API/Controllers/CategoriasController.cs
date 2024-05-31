@@ -14,13 +14,16 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
   
-        public CategoriasController(AppDbContext context, IConfiguration configuration)
+        public CategoriasController(AppDbContext context, IConfiguration configuration, ILogger<CategoriasController> logger)
         {
             _configuration = configuration;
             _context = context;
+            _logger = logger;
         }
 
+        /*
         [HttpGet("LerArquivoConfiguracao")]
         public string GetValores()
         {
@@ -30,7 +33,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             var secao1 = _configuration ["secao1:chave2"];
 
             return $"Chave1 = {valor1} \nChave2 = {valor2} \nSeção1 => Chave2 = {secao1}";
-        }
+        }*/
 
         [HttpGet("UsandoFromServices/{nome}")]
         public ActionResult<string> GetSaudacaoFromServices([FromServices] IMeuServico meuServico, string nome)
@@ -42,6 +45,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         [HttpGet("produtos")]
         public ActionResult<IEnumerable<CategoriaModel>> GetCategoriasProdutos()
         {
+            _logger.LogInformation("-------------GET api/categorias/produtos ---------------");
+
             return _context.Categorias.Include(p => p.Produtos).Where(c => c.CategoriaId <= 5).ToList();
         }
 
