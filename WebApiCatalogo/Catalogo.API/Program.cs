@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebApiCatalogo.Catalogo.Application.Extensions;
+using WebApiCatalogo.Catalogo.Application.Filters;
 using WebApiCatalogo.Catalogo.Application.Interface;
 using WebApiCatalogo.Catalogo.Application.Services;
 using WebApiCatalogo.Catalogo.Infrastucture.Context; 
@@ -29,6 +30,7 @@ builder.Services.AddDbContext<AppDbContext>(options => /* => é lambda*/
                      ServerVersion.AutoDetect(mySqlConnection)));
 
 builder.Services.AddTransient<IMeuServico, MeuServico>();
+builder.Services.AddScoped<ApiLoggingFilter>();
 
 var app = builder.Build();
 

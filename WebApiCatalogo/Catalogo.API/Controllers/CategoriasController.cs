@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApiCatalogo.Catalogo.Application.Filters;
 using WebApiCatalogo.Catalogo.Application.Interface;
 using WebApiCatalogo.Catalogo.Core.Model;
 using WebApiCatalogo.Catalogo.Infrastucture.Context;
@@ -45,6 +46,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(ApiLoggingFilter))]
         public ActionResult<IEnumerable<CategoriaModel>> Get()
         {
             try
