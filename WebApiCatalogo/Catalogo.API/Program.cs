@@ -6,6 +6,7 @@ using WebApiCatalogo.Catalogo.Application.Interface;
 using WebApiCatalogo.Catalogo.Application.Services;
 using WebApiCatalogo.Catalogo.Infrastucture.Context;
 using WebApiCatalogo.Catalogo.Infrastucture.Logging;
+using WebApiCatalogo.Catalogo.Infrastucture.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,7 @@ builder.Services.AddDbContext<AppDbContext>(options => /* => é lambda*/
 
 builder.Services.AddTransient<IMeuServico, MeuServico>();
 builder.Services.AddScoped<ApiLoggingFilter>();
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 
 
 builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
