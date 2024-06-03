@@ -13,7 +13,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
     [ApiController]
     public class CategoriasController : ControllerBase
     {
-        private readonly ICategoriaRepository _repository;
+        private readonly IRepository<CategoriaModel> _repository;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
@@ -59,7 +59,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         [HttpGet] 
         public ActionResult<IEnumerable<CategoriaModel>> Get()
         {
-            var categorias = _repository.GetCategorias();
+            var categorias = _repository.GetAll();
 
             if (categorias is null)
             {
@@ -74,7 +74,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         public ActionResult<CategoriaModel> Get(int id)
         {
 
-            var categoria = _repository.GetCategoriaPorId(id);
+            var categoria = _repository.Get(c => c.CategoriaId == id);
 
             if (categoria is null)
             {
@@ -94,7 +94,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 return BadRequest("Dados inválidos.");
             }
              
-            var categoriaCriada = _repository.GetCategoriaCriar(categoria);
+            var categoriaCriada = _repository.Create(categoria);
 
             return new CreatedAtRouteResult("ObterCategoria", new { id = categoriaCriada.CategoriaId }, categoriaCriada);
         }
@@ -108,21 +108,21 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 return BadRequest("O id é diferente da categoria.");
             }
 
-            _repository.GetCategoriaUpdate(categoria); 
+            _repository.Update(categoria); 
             return Ok(categoria);
         }
 
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            var categoria = _repository.GetCategoriaPorId(id);
+            var categoria = _repository.Get(c => c.CategoriaId == id);
 
             if (categoria == null)
             {
                 _logger.LogWarning($"Categoria com o id = {id} não encotrada!");
                 return NotFound($"Não foi possivel deletar a categoria id = {id}. Não encontrada.");
             }
-            var categoriaExcluida = _repository.GetCategoriaDelete(id);
+            var categoriaExcluida = _repository.Delete(categoria);
             return Ok(categoriaExcluida);
         }
     }

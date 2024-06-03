@@ -20,11 +20,11 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             _repository = repository;
             _logger = logger;
         }
-         
+
         [HttpGet("/Produtos")]
         public ActionResult<IEnumerable<ProdutoModel>> GetProdutos()
         {
-            var produto = _repository.GetProdutos().ToList();
+            var produto = _repository.GetAll().ToList();
             if (produto is null)
             {
                 _logger.LogWarning("Produtos não encontrados.");
@@ -32,20 +32,33 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             }
             return Ok(produto);
         }
-         
+
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public ActionResult<ProdutoModel> Get(int id)
         {
 
-            var produto = _repository.GetProdutoPorId(id);
+            var produto = _repository.Get(p => p.ProdutoId == id);
             if (produto is null)
             {
                 _logger.LogWarning($"O produto com o id {id} não foi encontrado.");
                 return NotFound($"Produto com o id = {id} não encontrado.");
             }
-            return produto;
+            return Ok(produto);
         }
-         
+
+        [HttpGet("/Produtos/Produtos/{id}")]
+        public ActionResult<ProdutoModel> GetId(int id)
+        {
+
+            var produto = _repository.GetProdutosPorCategoria(id);
+            if (produto is null)
+            {
+                _logger.LogWarning($"O produto com o id {id} não foi encontrado.");
+                return NotFound($"Produto com o id = {id} não encontrado.");
+            }
+            return Ok(produto);
+        }
+
         [HttpPost]
         public ActionResult Post(ProdutoModel produto)
         {
@@ -55,10 +68,10 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 _logger.LogWarning("Produto não encontrado.");
                 return BadRequest("Não encontrado.");
             }
-            _repository.GetProdutoCriar(produto);
-            return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto); 
+            _repository.Create(produto);
+            return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
-          
+
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, ProdutoModel produto)
         {
@@ -68,38 +81,23 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 return BadRequest($"Produto id = {id} é diferente.");
             }
 
-            bool atualizado = _repository.GetProdutoUpdate(produto);
-
-            if (atualizado)
-            {
-                return Ok(produto);
-            }
-            else
-            {
-                return StatusCode(500, $"Falha ao atualizar o produto de id = {id}.");
-            }
-             
+            var atualizado = _repository.Update(produto);
+            return Ok(produto);
         }
 
         [HttpDelete("{id:int:min(1)}")]
         public ActionResult Delete(int id)
         {
-            bool produto = _repository.GetProdutoDeletar(id);
+            var produto = _repository.Get(p => p.ProdutoId == id);
 
             if (produto == null)
             {
                 _logger.LogWarning($"O produto id {id} não foi localizado.");
                 return NotFound($"Produto id = {id} não localizado.");
             }
+            var produtoDeletado = _repository.Delete(produto); 
+            return Ok(produto);
 
-            if (produto)
-            {
-                return Ok($"Produto de id = {id} foi deletado.");
-            }
-            else
-            {
-                return StatusCode(500, $"Falha ao deletar o produto de id = {id}.");
-            } 
         }
     }
 }

@@ -2,12 +2,12 @@
 
 namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
 {
-    public interface ICategoriaRepository
+    public interface ICategoriaRepository : IRepository<CategoriaModel>
     {
-        IEnumerable<CategoriaModel>GetCategorias();
-        CategoriaModel GetCategoriaPorId(int id);
-        CategoriaModel GetCategoriaCriar(CategoriaModel categoria);
-        CategoriaModel GetCategoriaUpdate(CategoriaModel categoria);
-        CategoriaModel GetCategoriaDelete(int id);
+        //IEnumerable<CategoriaModel>GetCategorias();
+        //CategoriaModel GetCategoriaPorId(int id);
+        //CategoriaModel GetCategoriaCriar(CategoriaModel categoria);
+        //CategoriaModel GetCategoriaUpdate(CategoriaModel categoria);
+        //CategoriaModel GetCategoriaDelete(int id);
     }
 }
