@@ -12,19 +12,19 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        private readonly IProdutoRepository _repository;
+        private readonly IUnitOfWork _uof;
         private readonly ILogger _logger;
 
-        public ProdutosController(IProdutoRepository repository, ILogger<ProdutosController> logger)
-        {
-            _repository = repository;
+        public ProdutosController(ILogger<ProdutosController> logger, IUnitOfWork uof)
+        { 
             _logger = logger;
+            _uof = uof;
         }
 
         [HttpGet("/Produtos")]
         public ActionResult<IEnumerable<ProdutoModel>> GetProdutos()
         {
-            var produto = _repository.GetAll().ToList();
+            var produto = _uof.ProdutoRepository.GetAll().ToList();
             if (produto is null)
             {
                 _logger.LogWarning("Produtos não encontrados.");
@@ -37,7 +37,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         public ActionResult<ProdutoModel> Get(int id)
         {
 
-            var produto = _repository.Get(p => p.ProdutoId == id);
+            var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
             if (produto is null)
             {
                 _logger.LogWarning($"O produto com o id {id} não foi encontrado.");
@@ -50,7 +50,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         public ActionResult<ProdutoModel> GetId(int id)
         {
 
-            var produto = _repository.GetProdutosPorCategoria(id);
+            var produto = _uof.ProdutoRepository.GetProdutosPorCategoria(id);
             if (produto is null)
             {
                 _logger.LogWarning($"O produto com o id {id} não foi encontrado.");
@@ -68,7 +68,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 _logger.LogWarning("Produto não encontrado.");
                 return BadRequest("Não encontrado.");
             }
-            _repository.Create(produto);
+            _uof.ProdutoRepository.Create(produto);
+            _uof.Commit();
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
 
@@ -81,21 +82,23 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 return BadRequest($"Produto id = {id} é diferente.");
             }
 
-            var atualizado = _repository.Update(produto);
+            var atualizado = _uof.ProdutoRepository.Update(produto);
+            _uof.Commit();
             return Ok(produto);
         }
 
         [HttpDelete("{id:int:min(1)}")]
         public ActionResult Delete(int id)
         {
-            var produto = _repository.Get(p => p.ProdutoId == id);
+            var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
 
             if (produto == null)
             {
                 _logger.LogWarning($"O produto id {id} não foi localizado.");
                 return NotFound($"Produto id = {id} não localizado.");
             }
-            var produtoDeletado = _repository.Delete(produto); 
+            var produtoDeletado = _uof.ProdutoRepository.Delete(produto); 
+            _uof.Commit();
             return Ok(produto);
 
         }
