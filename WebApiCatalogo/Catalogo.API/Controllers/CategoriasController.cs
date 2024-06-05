@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiCatalogo.Catalogo.Application.DTOs;
+using WebApiCatalogo.Catalogo.Application.DTOs.Mappings;
 using WebApiCatalogo.Catalogo.Application.Filters;
 using WebApiCatalogo.Catalogo.Application.Interface;
 using WebApiCatalogo.Catalogo.Core.Model;
@@ -66,20 +67,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             {
                 _logger.LogWarning("Falha ao consultar as categorias.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
-            }
+            } 
 
-            var categoriasDto = new List<CategoriaDTO>();
-
-            foreach (var categoria in categorias)
-            {
-                var categoriaDto = new CategoriaDTO()
-                {
-                    CategoriaId = categoria.CategoriaId,
-                    Nome = categoria.Nome,
-                    ImagemUrl = categoria.ImagemUrl
-                };
-                categoriasDto.Add(categoriaDto);
-            }
+            var categoriasDto = categorias.ToCategoriaDTOList();
 
             return Ok(categoriasDto);  
         }
@@ -95,16 +85,11 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             {
                 _logger.LogWarning($"Categoria com o id = {id} não encontrada.");
                 return NotFound($"Categoria com id = {id} não encontrada.");
-            }
+            } 
+            
+            var categoriaDto = categoria.ToCategoriaDTO();
 
-            var CategoriaDto = new CategoriaDTO()
-            {
-                CategoriaId = categoria.CategoriaId,
-                Nome = categoria.Nome,
-                ImagemUrl = categoria.ImagemUrl,
-            };
-
-            return Ok(CategoriaDto);
+            return Ok(categoriaDto);
         }
 
 
@@ -115,24 +100,14 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             {
                 _logger.LogWarning($"Dados inválidos...");
                 return BadRequest("Dados inválidos.");
-            }
+            } 
 
-            var categoria = new CategoriaModel()
-            {
-                CategoriaId = categoriaDto.CategoriaId,
-                Nome = categoriaDto.Nome,
-                ImagemUrl = categoriaDto.ImagemUrl
-            };
+            var categoria = categoriaDto.ToCategoria();
 
             var categoriaCriada = _uof.CategoriaRepository.Create(categoria);
-            _uof.Commit();
+            _uof.Commit(); 
 
-            var novaCategoriaDto = new CategoriaDTO()
-            {
-                CategoriaId = categoria.CategoriaId,
-                Nome = categoria.Nome,
-                ImagemUrl = categoria.ImagemUrl,
-            };
+            var novaCategoriaDto = categoriaCriada.ToCategoriaDTO();
 
             return new CreatedAtRouteResult("ObterCategoria", new { id = novaCategoriaDto.CategoriaId }, novaCategoriaDto);
         }
@@ -144,24 +119,14 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             {
                 _logger.LogWarning($"O id = {id} é difrente da categoria!");
                 return BadRequest("O id é diferente da categoria.");
-            }
+            } 
 
-            var categoria = new CategoriaModel()
-            {
-                CategoriaId = categoriaDto.CategoriaId,
-                Nome = categoriaDto.Nome,
-                ImagemUrl = categoriaDto.ImagemUrl
-            };
+            var categoria = categoriaDto.ToCategoria();
 
-            _uof.CategoriaRepository.Update(categoria);
+            var categoriaAtualizada = _uof.CategoriaRepository.Update(categoria);
             _uof.Commit();
 
-            var categoriaAtualizadaDto = new CategoriaDTO()
-            {
-                CategoriaId = categoria.CategoriaId,
-                Nome = categoria.Nome,
-                ImagemUrl = categoria.ImagemUrl,
-            };
+            var categoriaAtualizadaDto = categoriaAtualizada.ToCategoriaDTO();
 
             return Ok(categoriaAtualizadaDto);
         }
@@ -177,14 +142,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 return NotFound($"Não foi possivel deletar a categoria id = {id}. Não encontrada.");
             }
             var categoriaExcluida = _uof.CategoriaRepository.Delete(categoria);
-            _uof.Commit();
+            _uof.Commit(); 
 
-            var categoriaExcluidaDto = new CategoriaDTO()
-            {
-                CategoriaId = categoria.CategoriaId,
-                Nome = categoria.Nome,
-                ImagemUrl = categoria.ImagemUrl,
-            };
+            var categoriaExcluidaDto = categoriaExcluida.ToCategoriaDTO();
 
             return Ok(categoriaExcluidaDto);
         }
