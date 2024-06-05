@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApiCatalogo.Catalogo.Application.DTOs;
 using WebApiCatalogo.Catalogo.Core.Model;
 using WebApiCatalogo.Catalogo.Infrastucture.Context;
 using WebApiCatalogo.Catalogo.Infrastucture.Repository;
@@ -13,16 +14,16 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly IUnitOfWork _uof;
-        private readonly ILogger _logger;
+        private readonly ILogger _logger; 
 
         public ProdutosController(ILogger<ProdutosController> logger, IUnitOfWork uof)
-        { 
+        {
             _logger = logger;
             _uof = uof;
         }
 
         [HttpGet("/Produtos")]
-        public ActionResult<IEnumerable<ProdutoModel>> GetProdutos()
+        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutos()
         {
             var produto = _uof.ProdutoRepository.GetAll().ToList();
             if (produto is null)
@@ -34,7 +35,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
-        public ActionResult<ProdutoModel> Get(int id)
+        public ActionResult<ProdutoDTO> Get(int id)
         {
 
             var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
@@ -47,7 +48,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         [HttpGet("/Produtos/Produtos/{id}")]
-        public ActionResult<ProdutoModel> GetId(int id)
+        public ActionResult<ProdutoDTO> GetId(int id)
         {
 
             var produto = _uof.ProdutoRepository.GetProdutosPorCategoria(id);
@@ -60,10 +61,10 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(ProdutoModel produto)
+        public ActionResult<ProdutoDTO> Post(ProdutoDTO produtoDto)
         {
 
-            if (produto is null)
+            if (produtoDto is null)
             {
                 _logger.LogWarning("Produto não encontrado.");
                 return BadRequest("Não encontrado.");
@@ -74,7 +75,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, ProdutoModel produto)
+        public ActionResult<ProdutoDTO> Put(int id, ProdutoDTO produto)
         {
             if (id != produto.ProdutoId)
             {
@@ -88,7 +89,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         [HttpDelete("{id:int:min(1)}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ProdutoDTO> Delete(int id)
         {
             var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
 
@@ -97,7 +98,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 _logger.LogWarning($"O produto id {id} não foi localizado.");
                 return NotFound($"Produto id = {id} não localizado.");
             }
-            var produtoDeletado = _uof.ProdutoRepository.Delete(produto); 
+            var produtoDeletado = _uof.ProdutoRepository.Delete(produto);
             _uof.Commit();
             return Ok(produto);
 
