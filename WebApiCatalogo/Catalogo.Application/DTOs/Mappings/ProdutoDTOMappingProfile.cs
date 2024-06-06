@@ -7,10 +7,12 @@ namespace WebApiCatalogo.Catalogo.Application.DTOs.Mappings
     {
         public ProdutoDTOMappingProfile()
         {
-            //Perfis de mapeamento
+            //Perfis de mapeamento (Com AutoMapper)
             //Mapeamento dos objetos para DTO
             CreateMap<ProdutoModel, ProdutoDTO>().ReverseMap();
             CreateMap<CategoriaModel,  CategoriaDTO>().ReverseMap();
+            CreateMap<ProdutoModel, ProdutoDTOUpdateRequest>().ReverseMap();
+            CreateMap<ProdutoModel, ProdutoDTOUpdateResponse>().ReverseMap();
         }
     }
 }

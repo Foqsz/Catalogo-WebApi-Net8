@@ -4,6 +4,8 @@ namespace WebApiCatalogo.Catalogo.Application.DTOs.Mappings
 {
     public static class CategoriaDTOMappingExtensions
     {
+
+        //Mapeamento manual sem o uso de Auto mapper
         public static CategoriaDTO? ToCategoriaDTO(this CategoriaModel categoria)
         {
             if (categoria is null)

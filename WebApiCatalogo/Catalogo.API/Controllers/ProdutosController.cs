@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiCatalogo.Catalogo.Application.DTOs;
@@ -92,6 +93,41 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             var novoProdutoDto = _mapper.Map<ProdutoDTO>(novoProduto);
 
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
+        }
+
+        [HttpPatch("{id}/UpdatePartial")]
+        public ActionResult<ProdutoDTOUpdateResponse> Patch(int id, JsonPatchDocument<ProdutoDTOUpdateRequest> patchProdutoDTO)
+        {
+            if (patchProdutoDTO is null || id <= 0)
+            {
+                _logger.LogWarning("Erro.");
+                return BadRequest("Nullo ou id 0 não pode.");
+            }
+
+            var produto = _uof.ProdutoRepository.Get(c => c.ProdutoId == id);
+
+            if (produto is null)
+            {
+                _logger.LogWarning("Produto não encontrado.");
+                return NotFound($"Produto com o id = {id} não encontrado.");
+            }
+
+            var produtoUpdateRequest = _mapper.Map<ProdutoDTOUpdateRequest>(produto);
+
+            patchProdutoDTO.ApplyTo(produtoUpdateRequest, ModelState);
+
+            if (!ModelState.IsValid || TryValidateModel(produtoUpdateRequest))
+            {
+                _logger.LogWarning("Erro Patch.");
+                return BadRequest("Nao esta dentro das regras");
+            }
+
+            _mapper.Map(produtoUpdateRequest, produto);
+
+            _uof.ProdutoRepository.Update(produto);
+            _uof.Commit();
+
+            return Ok(_mapper.Map<ProdutoDTOUpdateResponse>(produto));
         }
 
         [HttpPut("{id:int}")]
