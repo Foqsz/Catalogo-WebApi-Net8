@@ -14,12 +14,19 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
             _context = context;
         }
 
-        public IEnumerable<ProdutoModel> GetProdutos(ProdutosParameters produtosParams)
+        //public IEnumerable<ProdutoModel> GetProdutos(ProdutosParameters produtosParams)
+        //{
+        //    return GetAll()
+        //        .OrderBy(p => p.Nome)
+        //        .Skip((produtosParams.PageNumber - 1) * produtosParams.PageSize)
+        //        .Take(produtosParams.PageSize).ToList();
+        //}
+
+        public PagedList<ProdutoModel> GetProdutos(ProdutosParameters produtosParams)
         {
-            return GetAll()
-                .OrderBy(p => p.Nome)
-                .Skip((produtosParams.PageNumber - 1) * produtosParams.PageSize)
-                .Take(produtosParams.PageSize).ToList();
+            var produtos = GetAll().OrderBy(p => p.ProdutoId).AsQueryable();
+            var produtoOrdenados = PagedList<ProdutoModel>.ToPagedList(produtos, produtosParams.PageNumber, produtosParams.PageSize);
+            return produtoOrdenados;
         }
 
         public IEnumerable<ProdutoModel> GetProdutosPorCategoria(int id)

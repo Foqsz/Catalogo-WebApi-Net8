@@ -11,7 +11,8 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
         //bool GetProdutoUpdate(ProdutoModel produto);
         //bool GetProdutoDeletar(int id);
 
-        IEnumerable<ProdutoModel> GetProdutos(ProdutosParameters produtosParams);
+        //IEnumerable<ProdutoModel> GetProdutos(ProdutosParameters produtosParams);
+        PagedList<ProdutoModel> GetProdutos(ProdutosParameters produtosParams);
         IEnumerable<ProdutoModel> GetProdutosPorCategoria(int id);
     }
 }

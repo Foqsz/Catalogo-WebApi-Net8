@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using WebApiCatalogo.Catalogo.API.Pagination;
 using WebApiCatalogo.Catalogo.Application.DTOs;
 using WebApiCatalogo.Catalogo.Core.Model;
@@ -26,7 +27,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             _uof = uof;
             _mapper = mapper;
         }
-
+        //---------------------------------------------------------------------------------//
         [HttpGet("/Produtos")]
         public ActionResult<IEnumerable<ProdutoDTO>> GetProdutos()
         {
@@ -42,17 +43,29 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             return Ok(produtosDto);
         }
-
+        //---------------------------------------------------------------------------------//
         [HttpGet("pagination")]
         public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
         {
             var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
 
+            var metaData = new
+            {
+                produtos.TotalCount,
+                produtos.PageSize,
+                produtos.CurrentPage,
+                produtos.TotalPages,
+                produtos.HasNext,
+                produtos.HasPrevious
+            };
+
+            Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metaData));
+
             var produtosDto = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
 
             return Ok(produtosDto);
         }
-
+        //---------------------------------------------------------------------------------//
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public ActionResult<ProdutoDTO> Get(int id)
         {
@@ -68,7 +81,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             return Ok(produtoDto);
         }
-
+        //---------------------------------------------------------------------------------//
         [HttpGet("/Produtos/Produtos/{id}")]
         public ActionResult<ProdutoDTO> GetId(int id)
         { 
@@ -85,7 +98,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             return Ok(produtosDto);
         }
-
+        //---------------------------------------------------------------------------------//
         [HttpPost]
         public ActionResult<ProdutoDTO> Post(ProdutoDTO produtoDto)
         {
@@ -105,7 +118,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
-
+        //---------------------------------------------------------------------------------//
         [HttpPatch("{id}/UpdatePartial")]
         public ActionResult<ProdutoDTOUpdateResponse> Patch(int id, JsonPatchDocument<ProdutoDTOUpdateRequest> patchProdutoDTO)
         {
@@ -140,7 +153,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             return Ok(_mapper.Map<ProdutoDTOUpdateResponse>(produto));
         }
-
+        //---------------------------------------------------------------------------------//
         [HttpPut("{id:int}")]
         public ActionResult<ProdutoDTO> Put(int id, ProdutoDTO produtoDto)
         {
@@ -159,7 +172,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             return Ok(produtoAtualizadoDto);
         }
-
+        //---------------------------------------------------------------------------------//
         [HttpDelete("{id:int:min(1)}")]
         public ActionResult<ProdutoDTO> Delete(int id)
         {
