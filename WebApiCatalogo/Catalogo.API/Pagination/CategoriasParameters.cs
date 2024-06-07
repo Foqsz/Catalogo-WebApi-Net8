@@ -1,7 +1,6 @@
 ﻿namespace WebApiCatalogo.Catalogo.API.Pagination
 {
-    public class ProdutosParameters : QueryStringParameters
+    public class CategoriasParameters : QueryStringParameters
     {
- 
     }
 }

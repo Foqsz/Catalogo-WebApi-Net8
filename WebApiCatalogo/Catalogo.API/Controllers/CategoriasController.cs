@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using WebApiCatalogo.Catalogo.API.Pagination;
 using WebApiCatalogo.Catalogo.Application.DTOs;
 using WebApiCatalogo.Catalogo.Application.DTOs.Mappings;
 using WebApiCatalogo.Catalogo.Application.Filters;
@@ -18,14 +20,14 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         private readonly IUnitOfWork _uof;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
-
+        //---------------------------------------------------------------------------------//
         public CategoriasController(IConfiguration configuration, ILogger<CategoriasController> logger, IUnitOfWork uof)
         {
             _configuration = configuration;
             _logger = logger;
             _uof = uof;
         }
-
+        //---------------------------------------------------------------------------------//
         /*
         [HttpGet("LerArquivoConfiguracao")]
         public string GetValores()
@@ -37,14 +39,14 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             return $"Chave1 = {valor1} \nChave2 = {valor2} \nSeção1 => Chave2 = {secao1}";
         }*/
-
+        //---------------------------------------------------------------------------------//
         [HttpGet("UsandoFromServices/{nome}")]
         public ActionResult<string> GetSaudacaoFromServices([FromServices] IMeuServico meuServico, string nome)
         {
             return meuServico.Saudacao(nome);
         }
 
-
+        //---------------------------------------------------------------------------------//
         //Listar Categorias
         /*[HttpGet("produtos")]
         public ActionResult<IEnumerable<CategoriaModel>> GetCategoriasProdutos()
@@ -57,7 +59,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             }
             return categoriasProdutos;
         }*/
-
+        //---------------------------------------------------------------------------------//
         [HttpGet] 
         public ActionResult<IEnumerable<CategoriaDTO>> Get()
         {
@@ -74,7 +76,28 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(categoriasDto);  
         }
 
-         
+        //---------------------------------------------------------------------------------//
+        [HttpGet("pagination")]
+        public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriasParameters produtosParameters)
+        {
+            var categorias = _uof.CategoriaRepository.GetCategorias(produtosParameters);
+
+            var metaData = new
+            {
+                categorias.TotalCount,
+                categorias.PageSize,
+                categorias.CurrentPage,
+                categorias.TotalPages,
+                categorias.HasNext,
+                categorias.HasPrevious
+            };
+
+            Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metaData));
+
+            var categoriasDto = categorias.ToCategoriaDTOList();
+            return Ok(categoriasDto);
+        }
+        //---------------------------------------------------------------------------------//
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public ActionResult<CategoriaDTO> Get(int id)
         {
@@ -92,7 +115,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(categoriaDto);
         }
 
-
+        //---------------------------------------------------------------------------------//
         [HttpPost]
         public ActionResult<CategoriaDTO> Post(CategoriaDTO categoriaDto)
         {
@@ -111,7 +134,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             return new CreatedAtRouteResult("ObterCategoria", new { id = novaCategoriaDto.CategoriaId }, novaCategoriaDto);
         }
-
+        //---------------------------------------------------------------------------------//
         [HttpPut("{id:int}")]
         public ActionResult<CategoriaDTO> Put(int id, CategoriaDTO categoriaDto)
         {
@@ -130,7 +153,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             return Ok(categoriaAtualizadaDto);
         }
-
+        //---------------------------------------------------------------------------------//
         [HttpDelete("{id:int}")]
         public ActionResult<CategoriaDTO> Delete(int id)
         {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebApiCatalogo.Catalogo.API.Pagination;
 using WebApiCatalogo.Catalogo.Core.Model;
 using WebApiCatalogo.Catalogo.Infrastucture.Context;
 
@@ -13,6 +14,14 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
             _context = context;
         }
 
+        public PagedList<CategoriaModel> GetCategorias(CategoriasParameters categoriasParams)
+        {
+            var categorias = GetAll().OrderBy(p => p.CategoriaId).AsQueryable();
+
+            var categoriasOrdenadas = PagedList<CategoriaModel>.ToPagedList(categorias, categoriasParams.PageNumber, categoriasParams.PageSize);
+            return categoriasOrdenadas;
+        }
+
         //Listar Categorias
         //public IEnumerable<CategoriaModel> GetCategorias()
         //{
@@ -25,7 +34,7 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
         //{
         //    return _context.Categorias.FirstOrDefault(c => c.CategoriaId == id); //para checar id usa-se FirstOrDefault com lambda
         //}
-         
+
         ////Criar Categoria
         //public CategoriaModel GetCategoriaCriar(CategoriaModel categoria)
         //{
