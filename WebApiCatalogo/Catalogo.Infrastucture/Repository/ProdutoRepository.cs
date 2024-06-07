@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebApiCatalogo.Catalogo.API.Pagination;
 using WebApiCatalogo.Catalogo.Core.Model;
 using WebApiCatalogo.Catalogo.Infrastucture.Context;
 
@@ -11,6 +12,14 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
         public ProdutoRepository(AppDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public IEnumerable<ProdutoModel> GetProdutos(ProdutosParameters produtosParams)
+        {
+            return GetAll()
+                .OrderBy(p => p.Nome)
+                .Skip((produtosParams.PageNumber - 1) * produtosParams.PageSize)
+                .Take(produtosParams.PageSize).ToList();
         }
 
         public IEnumerable<ProdutoModel> GetProdutosPorCategoria(int id)

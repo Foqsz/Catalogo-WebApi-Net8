@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApiCatalogo.Catalogo.API.Pagination;
 using WebApiCatalogo.Catalogo.Application.DTOs;
 using WebApiCatalogo.Catalogo.Core.Model;
 using WebApiCatalogo.Catalogo.Infrastucture.Context;
@@ -38,6 +39,16 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             //var destino = _mapper.Map<Destino>(Origem);
             var produtosDto = _mapper.Map<IEnumerable<ProdutoDTO>>(produto);
+
+            return Ok(produtosDto);
+        }
+
+        [HttpGet("pagination")]
+        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
+        {
+            var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
+
+            var produtosDto = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
 
             return Ok(produtosDto);
         }
