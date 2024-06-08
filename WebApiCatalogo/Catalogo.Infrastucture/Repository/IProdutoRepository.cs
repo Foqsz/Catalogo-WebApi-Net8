@@ -13,6 +13,9 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
 
         //IEnumerable<ProdutoModel> GetProdutos(ProdutosParameters produtosParams);
         PagedList<ProdutoModel> GetProdutos(ProdutosParameters produtosParams);
+        PagedList<ProdutoModel> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroParams);
         IEnumerable<ProdutoModel> GetProdutosPorCategoria(int id);
+
+
     }
 }

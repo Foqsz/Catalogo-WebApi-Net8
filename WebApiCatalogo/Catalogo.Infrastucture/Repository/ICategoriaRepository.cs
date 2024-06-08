@@ -12,5 +12,6 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
         //CategoriaModel GetCategoriaDelete(int id);
 
         PagedList<CategoriaModel> GetCategorias(CategoriasParameters categoriasParams);
+        PagedList<CategoriaModel> GetProdutoNome(CategoriasFiltroNome categoriasFiltroParams);    
     }
 }

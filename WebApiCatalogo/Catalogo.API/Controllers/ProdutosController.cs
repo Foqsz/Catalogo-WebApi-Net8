@@ -48,7 +48,19 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
         {
             var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
+            return ObterProdutos(produtos);
+        }
+        //---------------------------------------------------------------------------------//
 
+        [HttpGet("filter/preco/pagination")]
+        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosFilterPreco([FromQuery] ProdutosFiltroPreco produtosFilterParams)
+        {
+            var produtos = _uof.ProdutoRepository.GetProdutosFiltroPreco(produtosFilterParams);
+            return ObterProdutos(produtos);
+        }
+
+        private ActionResult<IEnumerable<ProdutoDTO>> ObterProdutos(PagedList<ProdutoModel> produtos)
+        {
             var metaData = new
             {
                 produtos.TotalCount,
@@ -65,6 +77,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             return Ok(produtosDto);
         }
+
         //---------------------------------------------------------------------------------//
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public ActionResult<ProdutoDTO> Get(int id)
