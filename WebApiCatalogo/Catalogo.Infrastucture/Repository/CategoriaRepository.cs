@@ -22,6 +22,18 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
             return categoriasOrdenadas;
         }
 
+        public PagedList<CategoriaModel> GetProdutoNome(CategoriasFiltroNome categoriasFiltroParams)
+        {
+            var categorias = GetAll().AsQueryable(); 
+            
+            if (!string.IsNullOrEmpty(categoriasFiltroParams.Nome))
+            {
+                categorias = categorias.Where(c => c.Nome.Contains(categoriasFiltroParams.Nome));
+            }
+            var categoriasFiltradas = PagedList<CategoriaModel>.ToPagedList(categorias, categoriasFiltroParams.PageNumber, categoriasFiltroParams.PageSize);
+            return categoriasFiltradas;
+        }
+
         //Listar Categorias
         //public IEnumerable<CategoriaModel> GetCategorias()
         //{

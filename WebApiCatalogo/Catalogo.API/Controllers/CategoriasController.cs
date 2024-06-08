@@ -78,10 +78,25 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         //---------------------------------------------------------------------------------//
         [HttpGet("pagination")]
-        public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriasParameters produtosParameters)
+        public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriasParameters categoriasParameters)
         {
-            var categorias = _uof.CategoriaRepository.GetCategorias(produtosParameters);
+            var categorias = _uof.CategoriaRepository.GetCategorias(categoriasParameters);
 
+            return ObterCategorias(categorias);
+        }
+        //---------------------------------------------------------------------------------//
+
+        [HttpGet("filter/nome/pagination")]
+
+        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriaNome([FromQuery] CategoriasFiltroNome categoriasFiltroParams)
+        {
+            var categorias = _uof.CategoriaRepository.GetProdutoNome(categoriasFiltroParams);
+            return ObterCategorias(categorias);
+        }
+
+        //---------------------------------------------------------------------------------//
+        private ActionResult<IEnumerable<CategoriaDTO>> ObterCategorias(PagedList<CategoriaModel> categorias)
+        {
             var metaData = new
             {
                 categorias.TotalCount,
@@ -97,6 +112,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             var categoriasDto = categorias.ToCategoriaDTOList();
             return Ok(categoriasDto);
         }
+
         //---------------------------------------------------------------------------------//
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public ActionResult<CategoriaDTO> Get(int id)
