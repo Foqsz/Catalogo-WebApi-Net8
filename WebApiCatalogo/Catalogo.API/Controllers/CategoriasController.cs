@@ -10,6 +10,7 @@ using WebApiCatalogo.Catalogo.Application.Interface;
 using WebApiCatalogo.Catalogo.Core.Model;
 using WebApiCatalogo.Catalogo.Infrastucture.Context;
 using WebApiCatalogo.Catalogo.Infrastucture.Repository;
+using X.PagedList;
 
 namespace WebApiCatalogo.Catalogo.API.Controllers
 {
@@ -95,16 +96,16 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         //---------------------------------------------------------------------------------//
-        private ActionResult<IEnumerable<CategoriaDTO>> ObterCategorias(PagedList<CategoriaModel> categorias)
+        private ActionResult<IEnumerable<CategoriaDTO>> ObterCategorias(IPagedList<CategoriaModel> categorias)
         {
             var metaData = new
             {
-                categorias.TotalCount,
+                categorias.Count,
                 categorias.PageSize,
-                categorias.CurrentPage,
-                categorias.TotalPages,
-                categorias.HasNext,
-                categorias.HasPrevious
+                categorias.PageCount,
+                categorias.TotalItemCount,
+                categorias.HasNextPage,
+                categorias.HasPreviousPage
             };
 
             Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metaData));

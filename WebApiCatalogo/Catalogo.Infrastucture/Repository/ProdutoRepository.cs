@@ -2,6 +2,7 @@
 using WebApiCatalogo.Catalogo.API.Pagination;
 using WebApiCatalogo.Catalogo.Core.Model;
 using WebApiCatalogo.Catalogo.Infrastucture.Context;
+using X.PagedList;
 
 namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
 {
@@ -22,17 +23,18 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
         //        .Take(produtosParams.PageSize).ToList();
         //}
 
-        public async Task <PagedList<ProdutoModel>> GetProdutosAsync(ProdutosParameters produtosParams)
+        public async Task <IPagedList<ProdutoModel>> GetProdutosAsync(ProdutosParameters produtosParams)
         {
             var produtos = await GetAllAsync();
 
             var produtosOrdenados = produtos.OrderBy(p  => p.ProdutoId).AsQueryable();
 
-            var resultado = PagedList<ProdutoModel>.ToPagedList(produtosOrdenados, produtosParams.PageNumber, produtosParams.PageSize);
+            var resultado = await produtosOrdenados.ToPagedListAsync(produtosParams.PageNumber, produtosParams.PageSize);
+
             return resultado;
         }
 
-        public async Task<PagedList<ProdutoModel>> GetProdutosFiltroPrecoAsync(ProdutosFiltroPreco produtosFiltroParams)
+        public async Task<IPagedList<ProdutoModel>> GetProdutosFiltroPrecoAsync(ProdutosFiltroPreco produtosFiltroParams)
         {
             var produtos = await GetAllAsync();
 
@@ -51,7 +53,8 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
                     produtos = produtos.Where(p => p.Preco == produtosFiltroParams.Preco.Value).OrderBy(p => p.Preco);
                 }
             }                                                            //erro cs1503 resolvido adicionando AsQueryable()
-            var produtosFiltrados = PagedList<ProdutoModel>.ToPagedList(produtos.AsQueryable(), produtosFiltroParams.PageNumber, produtosFiltroParams.PageSize);
+            var produtosFiltrados = await produtos.ToPagedListAsync(produtosFiltroParams.PageNumber, produtosFiltroParams.PageSize);
+
             return produtosFiltrados;
         }
 
