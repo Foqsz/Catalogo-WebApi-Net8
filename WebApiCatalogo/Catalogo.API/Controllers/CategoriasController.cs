@@ -61,9 +61,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }*/
         //---------------------------------------------------------------------------------//
         [HttpGet]
-        public ActionResult<IEnumerable<CategoriaDTO>> Get()
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get()
         {
-            var categorias = _uof.CategoriaRepository.GetAll();
+            var categorias = await _uof.CategoriaRepository.GetAllAsync();
 
             if (categorias is null)
             {
@@ -78,9 +78,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         //---------------------------------------------------------------------------------//
         [HttpGet("pagination")]
-        public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriasParameters categoriasParameters)
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get([FromQuery] CategoriasParameters categoriasParameters)
         {
-            var categorias = _uof.CategoriaRepository.GetCategorias(categoriasParameters);
+            var categorias = await _uof.CategoriaRepository.GetCategoriasAsync(categoriasParameters);
 
             return ObterCategorias(categorias);
         }
@@ -88,9 +88,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         [HttpGet("filter/nome/pagination")]
 
-        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriaNome([FromQuery] CategoriasFiltroNome categoriasFiltroParams)
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriaNome([FromQuery] CategoriasFiltroNome categoriasFiltroParams)
         {
-            var categorias = _uof.CategoriaRepository.GetProdutoNome(categoriasFiltroParams);
+            var categorias = await _uof.CategoriaRepository.GetProdutoNomeAsync(categoriasFiltroParams);
             return ObterCategorias(categorias);
         }
 
@@ -115,10 +115,10 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         //---------------------------------------------------------------------------------//
         [HttpGet("{id:int}", Name = "ObterCategoria")]
-        public ActionResult<CategoriaDTO> Get(int id)
+        public async Task<ActionResult<CategoriaDTO>> Get(int id)
         {
 
-            var categoria = _uof.CategoriaRepository.Get(c => c.CategoriaId == id);
+            var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
 
             if (categoria is null)
             {
@@ -133,7 +133,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         //---------------------------------------------------------------------------------//
         [HttpPost]
-        public ActionResult<CategoriaDTO> Post(CategoriaDTO categoriaDto)
+        public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDto)
         {
             if (categoriaDto is null)
             {
@@ -143,8 +143,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             var categoria = categoriaDto.ToCategoria();
 
-            var categoriaCriada = _uof.CategoriaRepository.Create(categoria);
-            _uof.Commit();
+            var categoriaCriada = _uof.CategoriaRepository.Create(categoria); //create é feito na memória então não precisa do await
+            await _uof.CommitAsync();
 
             var novaCategoriaDto = categoriaCriada.ToCategoriaDTO();
 
@@ -152,7 +152,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
         //---------------------------------------------------------------------------------//
         [HttpPut("{id:int}")]
-        public ActionResult<CategoriaDTO> Put(int id, CategoriaDTO categoriaDto)
+        public async Task<ActionResult<CategoriaDTO>> Put(int id, CategoriaDTO categoriaDto)
         {
             if (id != categoriaDto.CategoriaId)
             {
@@ -162,8 +162,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             var categoria = categoriaDto.ToCategoria();
 
-            var categoriaAtualizada = _uof.CategoriaRepository.Update(categoria);
-            _uof.Commit();
+            var categoriaAtualizada = _uof.CategoriaRepository.Update(categoria); //update é feito na memória então não precisa do await
+            await _uof.CommitAsync();
 
             var categoriaAtualizadaDto = categoriaAtualizada.ToCategoriaDTO();
 
@@ -171,17 +171,17 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
         //---------------------------------------------------------------------------------//
         [HttpDelete("{id:int}")]
-        public ActionResult<CategoriaDTO> Delete(int id)
+        public async Task<ActionResult<CategoriaDTO>> Delete(int id)
         {
-            var categoria = _uof.CategoriaRepository.Get(c => c.CategoriaId == id);
+            var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
 
             if (categoria == null)
             {
                 _logger.LogWarning($"Categoria com o id = {id} não encotrada!");
                 return NotFound($"Não foi possivel deletar a categoria id = {id}. Não encontrada.");
             }
-            var categoriaExcluida = _uof.CategoriaRepository.Delete(categoria);
-            _uof.Commit();
+            var categoriaExcluida = _uof.CategoriaRepository.Delete(categoria); //Delete é feito na memória então não precisa do await
+            await _uof.CommitAsync();
 
             var categoriaExcluidaDto = categoriaExcluida.ToCategoriaDTO();
 

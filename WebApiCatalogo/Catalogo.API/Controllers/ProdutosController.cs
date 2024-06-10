@@ -29,9 +29,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
         //---------------------------------------------------------------------------------//
         [HttpGet("/Produtos")]
-        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutos()
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutos()
         {
-            var produto = _uof.ProdutoRepository.GetAll().ToList();
+            var produto = await _uof.ProdutoRepository.GetAllAsync();
             if (produto is null)
             {
                 _logger.LogWarning("Produtos não encontrados.");
@@ -45,17 +45,17 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
         //---------------------------------------------------------------------------------//
         [HttpGet("pagination")]
-        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> Get([FromQuery] ProdutosParameters produtosParameters)
         {
-            var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
+            var produtos = await _uof.ProdutoRepository.GetProdutosAsync(produtosParameters);
             return ObterProdutos(produtos);
         }
         //---------------------------------------------------------------------------------//
 
         [HttpGet("filter/preco/pagination")]
-        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosFilterPreco([FromQuery] ProdutosFiltroPreco produtosFilterParams)
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosFilterPreco([FromQuery] ProdutosFiltroPreco produtosFilterParams)
         {
-            var produtos = _uof.ProdutoRepository.GetProdutosFiltroPreco(produtosFilterParams);
+            var produtos = await _uof.ProdutoRepository.GetProdutosFiltroPrecoAsync(produtosFilterParams);
             return ObterProdutos(produtos);
         }
 
@@ -80,10 +80,10 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         //---------------------------------------------------------------------------------//
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
-        public ActionResult<ProdutoDTO> Get(int id)
+        public async Task<ActionResult<ProdutoDTO>> Get(int id)
         {
 
-            var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
+            var produto = await _uof.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
             if (produto is null)
             {
                 _logger.LogWarning($"O produto com o id {id} não foi encontrado.");
@@ -96,9 +96,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
         //---------------------------------------------------------------------------------//
         [HttpGet("/Produtos/Produtos/{id}")]
-        public ActionResult<ProdutoDTO> GetId(int id)
-        { 
-            var produto = _uof.ProdutoRepository.GetProdutosPorCategoria(id);
+        public async Task<ActionResult<ProdutoDTO>> GetId(int id)
+        {
+            var produto = await _uof.ProdutoRepository.GetProdutosPorCategoriaAsync(id);
 
             if (produto is null)
             {
@@ -113,7 +113,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
         //---------------------------------------------------------------------------------//
         [HttpPost]
-        public ActionResult<ProdutoDTO> Post(ProdutoDTO produtoDto)
+        public async Task<ActionResult<ProdutoDTO>> Post(ProdutoDTO produtoDto)
         {
 
             if (produtoDto is null)
@@ -125,7 +125,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             var produto = _mapper.Map<ProdutoModel>(produtoDto);
 
             var novoProduto = _uof.ProdutoRepository.Create(produto);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             var novoProdutoDto = _mapper.Map<ProdutoDTO>(novoProduto);
 
@@ -133,7 +133,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
         //---------------------------------------------------------------------------------//
         [HttpPatch("{id}/UpdatePartial")]
-        public ActionResult<ProdutoDTOUpdateResponse> Patch(int id, JsonPatchDocument<ProdutoDTOUpdateRequest> patchProdutoDTO)
+        public async Task<ActionResult<ProdutoDTOUpdateResponse>> Patch(int id, JsonPatchDocument<ProdutoDTOUpdateRequest> patchProdutoDTO)
         {
             if (patchProdutoDTO is null || id <= 0)
             {
@@ -141,7 +141,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 return BadRequest("Nullo ou id 0 não pode.");
             }
 
-            var produto = _uof.ProdutoRepository.Get(c => c.ProdutoId == id);
+            var produto = await _uof.ProdutoRepository.GetAsync(c => c.ProdutoId == id);
 
             if (produto is null)
             {
@@ -162,13 +162,13 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             _mapper.Map(produtoUpdateRequest, produto);
 
             _uof.ProdutoRepository.Update(produto);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             return Ok(_mapper.Map<ProdutoDTOUpdateResponse>(produto));
         }
         //---------------------------------------------------------------------------------//
         [HttpPut("{id:int}")]
-        public ActionResult<ProdutoDTO> Put(int id, ProdutoDTO produtoDto)
+        public async Task<ActionResult<ProdutoDTO>> Put(int id, ProdutoDTO produtoDto)
         {
             if (id != produtoDto.ProdutoId)
             {
@@ -179,7 +179,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             var produto = _mapper.Map<ProdutoModel>(produtoDto);
 
             var produtoAtualizado = _uof.ProdutoRepository.Update(produto);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             var produtoAtualizadoDto = _mapper.Map<ProdutoDTO>(produtoAtualizado);
 
@@ -187,9 +187,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
         //---------------------------------------------------------------------------------//
         [HttpDelete("{id:int:min(1)}")]
-        public ActionResult<ProdutoDTO> Delete(int id)
+        public async Task<ActionResult<ProdutoDTO>> Delete(int id)
         {
-            var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
+            var produto = await _uof.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
 
             if (produto == null)
             {
@@ -197,7 +197,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 return NotFound($"Produto id = {id} não localizado.");
             }
             var produtoDeletado = _uof.ProdutoRepository.Delete(produto);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             var produtoDeletadoDto = _mapper.Map<ProdutoDTO>(produtoDeletado);
 

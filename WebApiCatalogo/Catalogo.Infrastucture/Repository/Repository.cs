@@ -18,7 +18,7 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
             return await _context.Set<T>().AsNoTracking().ToListAsync();
         }
 
-        public async Task<T?> Get(Expression<Func<T, bool>> predicate)
+        public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)
         {
             return await _context.Set<T>().FirstOrDefaultAsync(predicate);
         } 
