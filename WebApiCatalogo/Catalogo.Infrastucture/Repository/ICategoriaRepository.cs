@@ -11,7 +11,7 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
         //CategoriaModel GetCategoriaUpdate(CategoriaModel categoria);
         //CategoriaModel GetCategoriaDelete(int id);
 
-        PagedList<CategoriaModel> GetCategorias(CategoriasParameters categoriasParams);
-        PagedList<CategoriaModel> GetProdutoNome(CategoriasFiltroNome categoriasFiltroParams);    
+        Task <PagedList<CategoriaModel>> GetCategoriasAsync(CategoriasParameters categoriasParams);
+        Task <PagedList<CategoriaModel>> GetProdutoNomeAsync(CategoriasFiltroNome categoriasFiltroParams);    
     }
 }

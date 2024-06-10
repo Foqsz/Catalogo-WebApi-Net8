@@ -14,23 +14,25 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
             _context = context;
         }
 
-        public PagedList<CategoriaModel> GetCategorias(CategoriasParameters categoriasParams)
+        public async Task<PagedList<CategoriaModel>> GetCategoriasAsync(CategoriasParameters categoriasParams)
         {
-            var categorias = GetAll().OrderBy(p => p.CategoriaId).AsQueryable();
+            var categorias = await GetAllAsync();
 
-            var categoriasOrdenadas = PagedList<CategoriaModel>.ToPagedList(categorias, categoriasParams.PageNumber, categoriasParams.PageSize);
-            return categoriasOrdenadas;
+            var categoriasOrdenadas = categorias.OrderBy(p => p.CategoriaId).AsQueryable();
+
+            var resultado = PagedList<CategoriaModel>.ToPagedList(categoriasOrdenadas, categoriasParams.PageNumber, categoriasParams.PageSize);
+            return resultado;
         }
 
-        public PagedList<CategoriaModel> GetProdutoNome(CategoriasFiltroNome categoriasFiltroParams)
+        public async Task<PagedList<CategoriaModel>> GetProdutoNomeAsync(CategoriasFiltroNome categoriasFiltroParams)
         {
-            var categorias = GetAll().AsQueryable(); 
+            var categorias = await GetAllAsync(); 
             
             if (!string.IsNullOrEmpty(categoriasFiltroParams.Nome))
             {
                 categorias = categorias.Where(c => c.Nome.Contains(categoriasFiltroParams.Nome));
             }
-            var categoriasFiltradas = PagedList<CategoriaModel>.ToPagedList(categorias, categoriasFiltroParams.PageNumber, categoriasFiltroParams.PageSize);
+            var categoriasFiltradas = PagedList<CategoriaModel>.ToPagedList(categorias.AsQueryable(), categoriasFiltroParams.PageNumber, categoriasFiltroParams.PageSize);
             return categoriasFiltradas;
         }
 

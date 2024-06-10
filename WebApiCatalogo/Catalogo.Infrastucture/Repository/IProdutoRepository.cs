@@ -12,9 +12,9 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
         //bool GetProdutoDeletar(int id);
 
         //IEnumerable<ProdutoModel> GetProdutos(ProdutosParameters produtosParams);
-        PagedList<ProdutoModel> GetProdutos(ProdutosParameters produtosParams);
-        PagedList<ProdutoModel> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroParams);
-        IEnumerable<ProdutoModel> GetProdutosPorCategoria(int id);
+        Task<PagedList<ProdutoModel>> GetProdutosAsync(ProdutosParameters produtosParams);
+        Task<PagedList<ProdutoModel>> GetProdutosFiltroPrecoAsync(ProdutosFiltroPreco produtosFiltroParams);
+        Task <IEnumerable<ProdutoModel>> GetProdutosPorCategoriaAsync(int id);
 
 
     }

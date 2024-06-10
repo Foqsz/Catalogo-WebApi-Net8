@@ -60,20 +60,20 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return categoriasProdutos;
         }*/
         //---------------------------------------------------------------------------------//
-        [HttpGet] 
+        [HttpGet]
         public ActionResult<IEnumerable<CategoriaDTO>> Get()
         {
-            var categorias = _uof.CategoriaRepository.GetAll(); 
+            var categorias = _uof.CategoriaRepository.GetAll();
 
             if (categorias is null)
             {
                 _logger.LogWarning("Falha ao consultar as categorias.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
-            } 
+            }
 
             var categoriasDto = categorias.ToCategoriaDTOList();
 
-            return Ok(categoriasDto);  
+            return Ok(categoriasDto);
         }
 
         //---------------------------------------------------------------------------------//
@@ -124,8 +124,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             {
                 _logger.LogWarning($"Categoria com o id = {id} não encontrada.");
                 return NotFound($"Categoria com id = {id} não encontrada.");
-            } 
-            
+            }
+
             var categoriaDto = categoria.ToCategoriaDTO();
 
             return Ok(categoriaDto);
@@ -139,12 +139,12 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             {
                 _logger.LogWarning($"Dados inválidos...");
                 return BadRequest("Dados inválidos.");
-            } 
+            }
 
             var categoria = categoriaDto.ToCategoria();
 
             var categoriaCriada = _uof.CategoriaRepository.Create(categoria);
-            _uof.Commit(); 
+            _uof.Commit();
 
             var novaCategoriaDto = categoriaCriada.ToCategoriaDTO();
 
@@ -158,7 +158,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             {
                 _logger.LogWarning($"O id = {id} é difrente da categoria!");
                 return BadRequest("O id é diferente da categoria.");
-            } 
+            }
 
             var categoria = categoriaDto.ToCategoria();
 
@@ -181,11 +181,12 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
                 return NotFound($"Não foi possivel deletar a categoria id = {id}. Não encontrada.");
             }
             var categoriaExcluida = _uof.CategoriaRepository.Delete(categoria);
-            _uof.Commit(); 
+            _uof.Commit();
 
             var categoriaExcluidaDto = categoriaExcluida.ToCategoriaDTO();
 
             return Ok(categoriaExcluidaDto);
+        //---------------------------------------------------------------------------------//
         }
     }
 }
