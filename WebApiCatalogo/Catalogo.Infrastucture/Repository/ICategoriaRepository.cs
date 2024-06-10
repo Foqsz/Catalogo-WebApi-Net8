@@ -1,5 +1,6 @@
 ﻿using WebApiCatalogo.Catalogo.API.Pagination;
 using WebApiCatalogo.Catalogo.Core.Model;
+using X.PagedList;
 
 namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
 {
@@ -11,7 +12,7 @@ namespace WebApiCatalogo.Catalogo.Infrastucture.Repository
         //CategoriaModel GetCategoriaUpdate(CategoriaModel categoria);
         //CategoriaModel GetCategoriaDelete(int id);
 
-        Task <PagedList<CategoriaModel>> GetCategoriasAsync(CategoriasParameters categoriasParams);
-        Task <PagedList<CategoriaModel>> GetProdutoNomeAsync(CategoriasFiltroNome categoriasFiltroParams);    
+        Task <IPagedList<CategoriaModel>> GetCategoriasAsync(CategoriasParameters categoriasParams);
+        Task <IPagedList<CategoriaModel>> GetProdutoNomeAsync(CategoriasFiltroNome categoriasFiltroParams);    
     }
 }
