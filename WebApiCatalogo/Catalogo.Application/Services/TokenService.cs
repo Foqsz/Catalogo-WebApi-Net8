@@ -12,7 +12,7 @@ namespace WebApiCatalogo.Catalogo.Application.Services
         public JwtSecurityToken GenerateAcessToken(IEnumerable<Claim> claims, IConfiguration _config)
         {
             // aqui eu obtenho o valor de SecretKey, que esta em SettingsJson
-            var key = _config.GetSection("JWT").GetValue<string>("SecretKey") ?? throw new InvalidOperationException("Invalid secret key!"); 
+            var key = _config.GetSection("JWT").GetValue<string>("SecretKey") ?? throw new InvalidOperationException("Invalid secret key!");
 
             //aqui eu converto pra um array de bits, passando a key(secretkey)
             var privateKey = Encoding.UTF8.GetBytes(key);
@@ -29,7 +29,7 @@ namespace WebApiCatalogo.Catalogo.Application.Services
                 Issuer = _config.GetSection("JWT").GetValue<string>("ValidIssuer"),
                 SigningCredentials = signingCredentials
             };
-            
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
 
@@ -41,7 +41,7 @@ namespace WebApiCatalogo.Catalogo.Application.Services
             var secureRandomBytes = new byte[128];
 
             using var randomNumberGenerator = RandomNumberGenerator.Create();
-            
+
             randomNumberGenerator.GetBytes(secureRandomBytes);
 
             var refreshToken = Convert.ToBase64String(secureRandomBytes);
@@ -51,7 +51,34 @@ namespace WebApiCatalogo.Catalogo.Application.Services
 
         public ClaimsPrincipal GetPrincipalFromExperiredToken(string token, IConfiguration _config)
         {
-            throw new NotImplementedException();
+            // iniciando com a chave secreta
+            var secretKey = _config["JWT:SecretKey"] ?? throw new InvalidOperationException("Invalid key");
+
+            //definindo a validação do token com os parametros abaixo
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(secretKey)),
+                ValidateLifetime = false
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters,
+                out SecurityToken securityToken);
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(
+                    SecurityAlgorithms.HmacSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+
+            return principal;
+
         }
     }
 }
