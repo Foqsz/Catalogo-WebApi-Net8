@@ -7,7 +7,7 @@ namespace WebApiCatalogo.Catalogo.Application.Interface
     {
         JwtSecurityToken GenerateAcessToken(IEnumerable<Claim> claims, IConfiguration configuration);
 
-        string GenerateAcessToken();
+        string GenerateRefreshToken();
 
         ClaimsPrincipal GetPrincipalFromExperiredToken(string token, IConfiguration _config);
     }
