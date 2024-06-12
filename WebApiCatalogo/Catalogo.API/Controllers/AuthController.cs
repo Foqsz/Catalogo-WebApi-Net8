@@ -99,5 +99,49 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(new Response { Status = "Sucess", Message = "User created sucessefully!" });
         }
 
+        [HttpPost]
+        [Route("refresh-token")]
+        public async Task<IActionResult> RefreshToken(TokenModelDTO tokenModel)
+        {
+            if (tokenModel is null)
+            {
+                return BadRequest("Invalid client request");
+            }
+
+            string? acessToken = tokenModel.AcessToken ?? throw new ArgumentException(nameof(tokenModel));
+
+            string? refreshToken = tokenModel.RefreshToken ?? throw new ArgumentException(nameof(tokenModel));
+
+            var principal = _tokenService.GetPrincipalFromExperiredToken(acessToken!, _configuration);
+
+            if (principal == null)
+            {
+                return BadRequest("Invalid acess token/refresh token");
+            }
+
+            string username = principal.Identity.Name;
+
+            var user = await _userManager.FindByNameAsync(username!);
+
+            if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return BadRequest("Invalid acess token/refresh token");
+            }
+
+            var newAcessToken = _tokenService.GenerateAcessToken(principal.Claims.ToList(), _configuration);
+
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+
+            await _userManager.UpdateAsync(user);
+
+            return new ObjectResult(new
+            {
+                acessToken = new JwtSecurityTokenHandler().WriteToken(newAcessToken),
+                refreshToken = newRefreshToken
+            });
+        }
+
     }
 }
