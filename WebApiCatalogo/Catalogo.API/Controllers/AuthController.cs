@@ -21,9 +21,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(ITokenService tokenService,
-            UserManager<ApplicationUser> userManager, 
-            RoleManager<IdentityRole> roleManager, 
-            IConfiguration configuration, 
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration,
             ILogger<AuthController> logger)
         {
             _tokenService = tokenService;
@@ -43,7 +43,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             {
                 var roleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
 
-                if(roleResult.Succeeded)
+                if (roleResult.Succeeded)
                 {
                     _logger.LogInformation(1, "Roles Added");
                     return StatusCode(StatusCodes.Status200OK,
@@ -59,7 +59,32 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return StatusCode(StatusCodes.Status400BadRequest,
                 new Response { Status = "Error", Message = "Role already exist." });
         }
-          
+
+        [HttpPost]
+        [Route("AddUserToRole")]
+        public async Task<IActionResult> AddUserToRole(string email, string roleName)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                var result = await _userManager.AddToRoleAsync(user, roleName);
+
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation(1, $"User {user.Email} addded to the {roleName} role");
+                    return StatusCode(StatusCodes.Status200OK,
+                        new Response { Status = "Success", Message = $"User {user.Email} added to the {roleName} role" });
+                }
+                else
+                {
+                    _logger.LogInformation(1, $"Error: unable to add user {user.Email} to the {roleName} role");
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new Response { Status = "Error", Message = $"Error: unable to add user {user.Email} to the {roleName} role" });
+                }
+            }
+            return BadRequest(new { error = "Unable to find user" });
+        }
 
         [HttpPost]
         [Route("login")]
@@ -115,7 +140,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             if (userExists != null)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
-                 
+
             }
 
             ApplicationUser user = new()
@@ -194,7 +219,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
             await _userManager.UpdateAsync(user);
 
-            return NoContent(); 
+            return NoContent();
         }
 
     }
