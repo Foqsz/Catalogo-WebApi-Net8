@@ -35,6 +35,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         [HttpPost]
         [Route("CreateRole")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CreateRole(string roleName)
         {
             var roleExist = await _roleManager.RoleExistsAsync(roleName);
@@ -62,6 +63,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         [HttpPost]
         [Route("AddUserToRole")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AddUserToRole(string email, string roleName)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -204,7 +206,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             });
         }
 
-        [Authorize]
+        [Authorize(Policy = "ExclusiveOnly")]
         [HttpPost]
         [Route("revoke/{username}")]
         public async Task<IActionResult> Revoke(string username)

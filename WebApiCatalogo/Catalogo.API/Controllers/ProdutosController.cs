@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
@@ -29,6 +30,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             _mapper = mapper;
         }
         //---------------------------------------------------------------------------------//
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet("/Produtos")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutos()
         {
