@@ -30,14 +30,13 @@ builder.Services.AddControllers(options =>
         .ReferenceHandler = ReferenceHandler.IgnoreCycles;
 }).AddNewtonsoftJson();
 
-
-var origensComAcessoPermitido = "_origensComAcessoPermitido";
+ 
 
 builder.Services.AddCors(options =>
-    options.AddDefaultPolicy(
+    options.AddPolicy("OrigensComAcessoPermitido",
     policy =>
     {
-        policy.WithOrigins("https://apirequest.io").WithMethods("GET, POST").AllowAnyHeader().AllowCredentials();
+        policy.WithOrigins("https://localhost:7144").WithMethods("GET, POST").AllowAnyHeader();
     })
 );
 
@@ -172,7 +171,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseCors(origensComAcessoPermitido);
+app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
