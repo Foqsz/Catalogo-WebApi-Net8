@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using WebApiCatalogo.Catalogo.Application.DTOs.Mappings;
 using WebApiCatalogo.Catalogo.Application.Extensions;
 using WebApiCatalogo.Catalogo.Application.Filters;
@@ -136,9 +137,10 @@ builder.Services.AddRateLimiter(rateLimiterOptions =>
     {
         options.PermitLimit = 1;
         options.Window = TimeSpan.FromSeconds(5);
-        options.QueueLimit = 0;
+        options.QueueLimit = 2;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
-    //rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
 builder.Services.AddTransient<IMeuServico, MeuServico>();
