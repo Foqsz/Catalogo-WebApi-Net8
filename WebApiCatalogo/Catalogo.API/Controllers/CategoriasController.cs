@@ -20,6 +20,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
     [Route("[controller]")]
     [ApiController]
     [EnableRateLimiting("fixedwindow")]
+
     public class CategoriasController : ControllerBase
     {
         private readonly IUnitOfWork _uof;

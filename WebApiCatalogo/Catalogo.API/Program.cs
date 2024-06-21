@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+using WebApiCatalogo.Catalogo.API.RateLimiterOptions;
 using WebApiCatalogo.Catalogo.Application.DTOs.Mappings;
 using WebApiCatalogo.Catalogo.Application.Extensions;
 using WebApiCatalogo.Catalogo.Application.Filters;
@@ -32,7 +33,7 @@ builder.Services.AddControllers(options =>
         .ReferenceHandler = ReferenceHandler.IgnoreCycles;
 }).AddNewtonsoftJson();
 
- 
+
 
 builder.Services.AddCors(options =>
     options.AddPolicy("OrigensComAcessoPermitido",
@@ -126,22 +127,44 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("ExclusivePolicyOnly", policy =>
                       policy.RequireAssertion(context =>
-                      context.User.HasClaim(claim => 
+                      context.User.HasClaim(claim =>
                       claim.Type == "id" && claim.Value == "Vinicius") || context.User.IsInRole("SuperAdmin")));
- 
+
 });
 
-builder.Services.AddRateLimiter(rateLimiterOptions =>
+var myOptions = new MyRateLimitOptions();
+
+builder.Configuration.GetSection(MyRateLimitOptions.MyRateLimit).Bind(myOptions);
+
+builder.Services.AddRateLimiter(rateLimitOptions =>
 {
-    rateLimiterOptions.AddFixedWindowLimiter(policyName: "fixedwindow", options =>
+    rateLimitOptions.AddFixedWindowLimiter(policyName: "fixedwindow", options =>
     {
-        options.PermitLimit = 1;
-        options.Window = TimeSpan.FromSeconds(5);
-        options.QueueLimit = 2;
+        options.PermitLimit = myOptions.PermitLimit;
+        options.Window = TimeSpan.FromSeconds(myOptions.Window);
+        options.QueueLimit = myOptions.QueueLimit;
         options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
-    rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    rateLimitOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpcontext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpcontext.User.Identity?.Name ??
+                httpcontext.Request.Headers.Host.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 3,
+                QueueLimit = 0,
+                Window = TimeSpan.FromSeconds(5)
+            }));
+});
+
 
 builder.Services.AddTransient<IMeuServico, MeuServico>();
 builder.Services.AddScoped<ApiLoggingFilter>();
