@@ -82,6 +82,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         //---------------------------------------------------------------------------------//
+        [Authorize(Policy = "UserOnly")]
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public async Task<ActionResult<ProdutoDTO>> Get(int id)
         {
@@ -98,6 +99,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(produtoDto);
         }
         //---------------------------------------------------------------------------------//
+        [Authorize(Policy = "UserOnly")]
         [HttpGet("/Produtos/Produtos/{id}")]
         public async Task<ActionResult<ProdutoDTO>> GetId(int id)
         {
@@ -115,6 +117,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(produtosDto);
         }
         //---------------------------------------------------------------------------------//
+        [Authorize(Policy = "UserOnly")]
         [HttpPost]
         public async Task<ActionResult<ProdutoDTO>> Post(ProdutoDTO produtoDto)
         {
@@ -135,6 +138,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
         //---------------------------------------------------------------------------------//
+        [Authorize(Policy = "UserOnly")]
         [HttpPatch("{id}/UpdatePartial")]
         public async Task<ActionResult<ProdutoDTOUpdateResponse>> Patch(int id, JsonPatchDocument<ProdutoDTOUpdateRequest> patchProdutoDTO)
         {
@@ -170,6 +174,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(_mapper.Map<ProdutoDTOUpdateResponse>(produto));
         }
         //---------------------------------------------------------------------------------//
+        [Authorize(Policy = "UserOnly")]
         [HttpPut("{id:int}")]
         public async Task<ActionResult<ProdutoDTO>> Put(int id, ProdutoDTO produtoDto)
         {
@@ -189,7 +194,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(produtoAtualizadoDto);
         }
         //---------------------------------------------------------------------------------//
-        [HttpDelete("{id:int:min(1)}")]
+        [Authorize(Policy = "UserOnly")]
+        [HttpDelete("{id:int:min(1)}")] 
         public async Task<ActionResult<ProdutoDTO>> Delete(int id)
         {
             var produto = await _uof.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
