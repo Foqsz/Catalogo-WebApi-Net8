@@ -17,6 +17,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 {
     [Route("[controller]")] // /produtos
     [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class ProdutosController : ControllerBase
     {
         private readonly IUnitOfWork _uof;
