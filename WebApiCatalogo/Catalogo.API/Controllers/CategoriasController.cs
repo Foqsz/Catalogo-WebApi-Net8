@@ -67,8 +67,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }*/
         //---------------------------------------------------------------------------------//
         [HttpGet]
-        //[Authorize]
-        [DisableRateLimiting]
+        [Authorize]
+        //[DisableRateLimiting]
         public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get()
         {
             var categorias = await _uof.CategoriaRepository.GetAllAsync();

@@ -49,7 +49,25 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "apicatalogo", Version = "v1" });
+    //c.SwaggerDoc("v1", new OpenApiInfo { Title = "apicatalogo", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo()
+    {
+        Version = "v1",
+        Title = "APICatalogo",
+        Description = "Catálogo de Produtos e Categorias",
+        TermsOfService = new Uri("https://foqsz.github.io/"),
+        Contact = new OpenApiContact
+        {
+            Name = "Victor Vinicius",
+            Email = "contatovictorvinicius05@gmail.com",
+            Url = new Uri("https://foqsz.github.io/"),
+        },
+        License =  new OpenApiLicense
+        {
+            Name = "Usar sobre LICX",
+            Url = new Uri("https://foqsz.github.io/"),
+        }
+    });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
