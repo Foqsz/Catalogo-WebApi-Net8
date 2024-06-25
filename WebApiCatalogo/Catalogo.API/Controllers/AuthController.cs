@@ -88,6 +88,13 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return BadRequest(new { error = "Unable to find user" });
         }
 
+
+        /// <summary>
+        /// Verifica as credenciais de um usuario
+        /// </summary>
+        /// <param name="model">Um objeto tipo UsuarioDTO</param>
+        /// <returns>Status 200 e o token para o cliente</returns>
+        /// <remarks>retorna o status 200 e o token</remarks>
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModelDTO model)
@@ -134,6 +141,12 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
 
         }
 
+        /// <summary>
+        /// Registra um novo usuário
+        /// </summary>
+        /// <param name="model">Um objeto UsuarioDTO</param>
+        /// <returns>Status 200</returns>
+        /// <remarks>retorna o status 200</remarks>
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModelDTO model)

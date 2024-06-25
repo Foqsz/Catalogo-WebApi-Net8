@@ -82,6 +82,12 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         //---------------------------------------------------------------------------------//
+       
+        /// <summary>
+        /// Exibe uma relação de produtos
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Retorna uma lista de objetos Produto</returns>
         [Authorize(Policy = "UserOnly")]
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public async Task<ActionResult<ProdutoDTO>> Get(int id)
@@ -99,6 +105,12 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(produtoDto);
         }
         //---------------------------------------------------------------------------------//
+        
+        /// <summary>
+        /// Obtem o produto pelo seu identificador id
+        /// </summary>
+        /// <param name="id">Código do produto</param>
+        /// <returns>Um objeto produto</returns>
         [Authorize(Policy = "UserOnly")]
         [HttpGet("/Produtos/Produtos/{id}")]
         public async Task<ActionResult<ProdutoDTO>> GetId(int id)

@@ -66,9 +66,13 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return categoriasProdutos;
         }*/
         //---------------------------------------------------------------------------------//
+        /// <summary>
+        /// Obtem uma lista de objetos Categoria
+        /// </summary>
+        /// <returns>Uma lista de objetos categoria</returns>
         [HttpGet]
         [Authorize]
-        //[DisableRateLimiting]
+        [DisableRateLimiting]
         public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get()
         {
             var categorias = await _uof.CategoriaRepository.GetAllAsync();
@@ -122,6 +126,12 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         //---------------------------------------------------------------------------------//
+        /// <summary>
+        /// Obter uma categoria pelo seu id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Objetos categoria</returns>
+        
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public async Task<ActionResult<CategoriaDTO>> Get(int id)
         {
@@ -140,6 +150,23 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         //---------------------------------------------------------------------------------//
+
+        /// <summary>
+        /// Inclui uma nova categoria
+        /// </summary>
+        /// <remarks>
+        /// Exemplo de request:
+        ///
+        ///     POST api/categorias
+        ///     {
+        ///         "categoriaId": 1,
+        ///         "nome": "categoria1",
+        ///         "imagemUrl": "http://teste.net/1.jpg"
+        ///     }
+        /// </remarks>
+        /// <param name="categoriaDto">objeto Categoria</param>
+        /// <returns>O objeto Categoria incluída</returns>
+        /// <remarks>Retorna um objeto Categoria incluído</remarks>
         [HttpPost]
         public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDto)
         {
