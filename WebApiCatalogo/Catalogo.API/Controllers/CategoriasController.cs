@@ -20,6 +20,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
     [Route("[controller]")]
     [ApiController]
     [EnableRateLimiting("fixedwindow")]
+    [Produces("application/json")]
 
     public class CategoriasController : ControllerBase
     {
@@ -133,6 +134,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         /// <returns>Objetos categoria</returns>
         
         [HttpGet("{id:int}", Name = "ObterCategoria")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CategoriaDTO>> Get(int id)
         {
 
@@ -168,6 +171,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         /// <returns>O objeto Categoria incluída</returns>
         /// <remarks>Retorna um objeto Categoria incluído</remarks>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDto)
         {
             if (categoriaDto is null)
@@ -186,7 +191,16 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return new CreatedAtRouteResult("ObterCategoria", new { id = novaCategoriaDto.CategoriaId }, novaCategoriaDto);
         }
         //---------------------------------------------------------------------------------//
+        
+        /// <summary>
+        /// Atualizar uma categoria
+        /// </summary>
+        /// <param name="id">id do objeto categoria</param>
+        /// <param name="categoriaDto">objeto categoria</param>
+        /// <returns>Retorna uma categoria atualizada</returns>
         [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<CategoriaDTO>> Put(int id, CategoriaDTO categoriaDto)
         {
             if (id != categoriaDto.CategoriaId)
@@ -205,8 +219,17 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(categoriaAtualizadaDto);
         }
         //---------------------------------------------------------------------------------//
+        
+        /// <summary>
+        /// Deleta um objeto categoria
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Retorna um objeto deletado</returns>
+        
         [HttpDelete("{id:int}")]
         [Authorize(Policy = "AdminOnly")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CategoriaDTO>> Delete(int id)
         {
             var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
