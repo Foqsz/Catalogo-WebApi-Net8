@@ -33,6 +33,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         //---------------------------------------------------------------------------------//
         [Authorize(Policy = "AdminOnly")]
         [HttpGet("/Produtos")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutos()
         {
             var produto = await _uof.ProdutoRepository.GetAllAsync();
@@ -153,6 +156,10 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         //---------------------------------------------------------------------------------//
         [Authorize(Policy = "UserOnly")]
         [HttpPatch("{id}/UpdatePartial")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<ProdutoDTOUpdateResponse>> Patch(int id, JsonPatchDocument<ProdutoDTOUpdateRequest> patchProdutoDTO)
         {
             if (patchProdutoDTO is null || id <= 0)

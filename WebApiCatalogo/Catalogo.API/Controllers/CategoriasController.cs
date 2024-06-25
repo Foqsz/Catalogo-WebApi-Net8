@@ -74,6 +74,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         [HttpGet]
         [Authorize]
         [DisableRateLimiting]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get()
         {
             var categorias = await _uof.CategoriaRepository.GetAllAsync();
