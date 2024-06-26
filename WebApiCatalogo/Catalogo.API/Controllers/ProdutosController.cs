@@ -212,6 +212,9 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         //---------------------------------------------------------------------------------//
         [Authorize(Policy = "UserOnly")]
         [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<ProdutoDTO>> Put(int id, ProdutoDTO produtoDto)
         {
             if (id != produtoDto.ProdutoId)
