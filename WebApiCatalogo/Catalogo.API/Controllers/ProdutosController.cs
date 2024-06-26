@@ -149,6 +149,8 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         //---------------------------------------------------------------------------------//
         [Authorize(Policy = "UserOnly")]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ProdutoDTO>> Post(ProdutoDTO produtoDto)
         {
 
