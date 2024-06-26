@@ -2,41 +2,43 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using WebApiCatalogo.Catalogo.API.Controllers;
 using WebApiCatalogo.Catalogo.Application.DTOs.Mappings;
 using WebApiCatalogo.Catalogo.Infrastucture.Context;
 using WebApiCatalogo.Catalogo.Infrastucture.Repository;
 
-namespace WebApiCatalogoxUnitTests.UnitTests;
-
-public class ProdutosUnitTestController
+namespace WebApiCatalogoxUnitTests.UnitTests
 {
-    public IUnitOfWork repository;
-    public IMapper mapper;
-    public ILogger logger;
-    public static DbContextOptions<AppDbContext> dbContextOptions { get; }
-
-    public static string connectionString = "Server=localhost;DataBase=apicatalogodb;Uid=root;Pwd=Hw8vup5e;";
-
-    static ProdutosUnitTestController()
+    public class ProdutosUnitTestController
     {
-        dbContextOptions = new DbContextOptionsBuilder<AppDbContext>()
-            .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
-            .Options;
-    }
+        public IUnitOfWork repository;
+        public IMapper mapper;
+        public ILogger<ProdutosController> logger;
+        public static DbContextOptions<AppDbContext> dbContextOptions { get; }
 
-    public ProdutosUnitTestController()
-    {
-        var config = new MapperConfiguration(cfg =>
+        public static string connectionString = "Server=localhost;Database=CatalogoDB;Uid=root;Pwd=1967;";
+
+        static ProdutosUnitTestController()
         {
-            cfg.AddProfile(new ProdutoDTOMappingProfile());
-        });
+            dbContextOptions = new DbContextOptionsBuilder<AppDbContext>()
+                .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+                .Options;
+        }
 
-        mapper = config.CreateMapper();
-        var context = new AppDbContext(dbContextOptions);
-        repository = new UnitOfWork(context);
+        public ProdutosUnitTestController()
+        {
+            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            logger = loggerFactory.CreateLogger<ProdutosController>();
+
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new ProdutoDTOMappingProfile());
+            });
+
+            mapper = config.CreateMapper();
+
+            var context = new AppDbContext(dbContextOptions);
+            repository = new UnitOfWork(context);
+        }
     }
 }

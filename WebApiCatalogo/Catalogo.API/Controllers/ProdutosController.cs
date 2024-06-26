@@ -38,17 +38,25 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutos()
         {
-            var produto = await _uof.ProdutoRepository.GetAllAsync();
-            if (produto is null)
+            try
+            {
+                var produto = await _uof.ProdutoRepository.GetAllAsync();
+                if (produto is null)
+                {
+                    _logger.LogWarning("Produtos não encontrados.");
+                    return NotFound("Produtos não encontrados.");
+                }
+
+                //var destino = _mapper.Map<Destino>(Origem);
+                var produtosDto = _mapper.Map<IEnumerable<ProdutoDTO>>(produto);
+
+                return Ok(produtosDto);
+            }
+            catch (Exception)
             {
                 _logger.LogWarning("Produtos não encontrados.");
-                return NotFound("Produtos não encontrados.");
+                return BadRequest();
             }
-
-            //var destino = _mapper.Map<Destino>(Origem);
-            var produtosDto = _mapper.Map<IEnumerable<ProdutoDTO>>(produto);
-
-            return Ok(produtosDto);
         }
         //---------------------------------------------------------------------------------//
         [HttpGet("pagination")]
@@ -86,12 +94,15 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         }
 
         //---------------------------------------------------------------------------------//
-       
+
         /// <summary>
         /// Exibe uma relação de produtos
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Retorna uma lista de objetos Produto</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Policy = "UserOnly")]
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public async Task<ActionResult<ProdutoDTO>> Get(int id)
@@ -101,7 +112,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             if (produto is null)
             {
                 _logger.LogWarning($"O produto com o id {id} não foi encontrado.");
-                return NotFound($"Produto com o id = {id} não encontrado.");
+                return BadRequest($"Produto com o id = {id} não encontrado.");
             }
 
             var produtoDto = _mapper.Map<ProdutoDTO>(produto);
@@ -109,12 +120,15 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(produtoDto);
         }
         //---------------------------------------------------------------------------------//
-        
+
         /// <summary>
         /// Obtem o produto pelo seu identificador id
         /// </summary>
         /// <param name="id">Código do produto</param>
         /// <returns>Um objeto produto</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Policy = "UserOnly")]
         [HttpGet("/Produtos/Produtos/{id}")]
         public async Task<ActionResult<ProdutoDTO>> GetId(int id)
