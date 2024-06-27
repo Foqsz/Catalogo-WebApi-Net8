@@ -25,12 +25,12 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
     public class CategoriasController : ControllerBase
     {
         private readonly IUnitOfWork _uof;
-        private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
         //---------------------------------------------------------------------------------//
-        public CategoriasController(IConfiguration configuration, ILogger<CategoriasController> logger, IUnitOfWork uof)
+        public CategoriasController(/*IConfiguration configuration,*/ ILogger<CategoriasController> logger, IUnitOfWork uof)
         {
-            _configuration = configuration;
+            //_configuration = configuration;
             _logger = logger;
             _uof = uof;
         }
@@ -84,7 +84,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             if (categorias is null)
             {
                 _logger.LogWarning("Falha ao consultar as categorias.");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
+                return NotFound("Ocorreu um problema ao tratar sua solicitação.");
             }
 
             var categoriasDto = categorias.ToCategoriaDTOList();
