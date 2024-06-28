@@ -72,7 +72,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         /// </summary>
         /// <returns>Uma lista de objetos categoria</returns>
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
