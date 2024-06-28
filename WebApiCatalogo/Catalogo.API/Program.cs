@@ -232,13 +232,16 @@ builder.Services.AddLogging(builder =>
 
 var app = builder.Build();
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.ConfigureExceptionHandler();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//    app.ConfigureExceptionHandler();
+//}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
