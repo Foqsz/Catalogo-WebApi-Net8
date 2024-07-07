@@ -72,7 +72,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         /// </summary>
         /// <returns>Uma lista de objetos categoria</returns>
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -230,7 +230,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         /// <returns>Retorna um objeto deletado</returns>
         
         [HttpDelete("{id:int}")]
-        [Authorize(Policy = "AdminOnly")]
+        //[Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CategoriaDTO>> Delete(int id)

@@ -147,6 +147,11 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
             return Ok(produtosDto);
         }
         //---------------------------------------------------------------------------------//
+        /// <summary>
+        /// Inclui um novo produto
+        /// </summary>
+        /// <param name="produtoDto"></param>
+        /// <returns>Retorna um novo produto</returns>
         [Authorize(Policy = "UserOnly")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
