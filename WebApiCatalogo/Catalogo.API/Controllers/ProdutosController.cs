@@ -103,7 +103,7 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = "UserOnly")]
+        //[Authorize(Policy = "UserOnly")]
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public async Task<ActionResult<ProdutoDTO>> Get(int id)
         {
@@ -126,11 +126,12 @@ namespace WebApiCatalogo.Catalogo.API.Controllers
         /// </summary>
         /// <param name="id">Código do produto</param>
         /// <returns>Um objeto produto</returns>
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        /// 
         [Authorize(Policy = "UserOnly")]
         [HttpGet("/Produtos/Produtos/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)] 
         public async Task<ActionResult<ProdutoDTO>> GetId(int id)
         {
             var produto = await _uof.ProdutoRepository.GetProdutosPorCategoriaAsync(id);
